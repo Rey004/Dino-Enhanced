@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Enhanced</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Main Game Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- UI Overlay -->
+        <div id="ui-layer">
+            <div id="score-container">
+                <span id="score-label">HI <span id="hi-score">00000</span></span>
+                <span id="current-score">00000</span>
+            </div>
+
+            <div id="main-menu" class="overlay-panel">
+                <h1>DINO <span>ENHANCED</span></h1>
+                <p>Press <kbd>SPACE</kbd> to Start</p>
+            </div>
+
+            <div id="game-over-panel" class="overlay-panel hidden">
+                <h2>GAME OVER</h2>
+                <p>Press <kbd>SPACE</kbd> or <kbd>R</kbd> to Restart</p>
+            </div>
+            
+            <div id="settings-button" title="Settings">⚙</div>
+
+            <div id="settings-panel" class="overlay-panel hidden">
+                <h2>Settings</h2>
+                <div class="setting-row">
+                    <label>Theme</label>
+                    <select id="theme-select">
+                        <option value="classic">Classic</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="nature">Nature</option>
+                        <option value="space">Space</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label>Particles</label>
+                    <input type="checkbox" id="toggle-particles" checked>
+                </div>
+                <div class="setting-row">
+                    <label>Music/SFX</label>
+                    <input type="checkbox" id="toggle-audio" checked>
+                </div>
+                <div class="setting-row">
+                    <label>Show FPS</label>
+                    <input type="checkbox" id="toggle-fps">
+                </div>
+                <button id="close-settings">Close</button>
+            </div>
+
+            <div id="fps-counter" class="hidden">FPS: <span>60</span></div>
+        </div>
+    </div>
+
+    <!-- Application Bootstrap -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Dino Enhanced",
+  "version": "1.0",
+  "description": "An advanced modern reimagining of the classic Chrome Dino offline game.",
+  "chrome_url_overrides": {
+    "newtab": "src/index.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Dino Enhanced"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
