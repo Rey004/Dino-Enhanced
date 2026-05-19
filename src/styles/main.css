@@ -236,11 +236,66 @@ kbd {
     margin-top: 4px;
 }
 
-.mic-icon svg, .lens-icon svg {
-    width: 24px;
-    height: 24px;
+.enhancement-toggle-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+    z-index: 10;
+    background: var(--panel-bg);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.ui-switch {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 18px;
+}
+
+.ui-switch input { opacity: 0; width: 0; height: 0; }
+
+.ui-slider {
+    position: absolute;
     cursor: pointer;
-    margin-left: 15px;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.2);
+    transition: .4s;
+    border-radius: 20px;
+    border: 1px solid var(--panel-border);
+}
+
+.ui-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-color);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.ui-switch input:checked + .ui-slider {
+    background-color: #34a853;
+}
+
+.ui-switch input:checked + .ui-slider:before {
+    transform: translateX(14px);
+    background-color: white;
+}
+
+.ui-switch-label {
+    font-size: 13px;
+    color: var(--text-color);
+    font-weight: 500;
 }
 
 .customize-button {

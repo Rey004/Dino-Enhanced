@@ -33,9 +33,38 @@ export const UIManager = {
             });
         }
         
-        document.getElementById('settings-button').addEventListener('click', () => {
+        document.getElementById('settings-button').addEventListener('click', (e) => {
+            e.stopPropagation();
             this.settingsPanel.classList.toggle('hidden');
         });
+        
+        document.addEventListener('click', (e) => {
+            if (!this.settingsPanel.classList.contains('hidden')) {
+                const isClickInside = this.settingsPanel.contains(e.target);
+                const isSettingsButton = document.getElementById('settings-button').contains(e.target);
+                if (!isClickInside && !isSettingsButton) {
+                    this.settingsPanel.classList.add('hidden');
+                }
+            }
+        });
+        
+        const mainToggle = document.getElementById('main-ui-enhancement-toggle');
+        if (mainToggle) {
+            chrome.storage?.local.get(['enhancementsEnabled'], (result) => {
+                if (result.enhancementsEnabled !== undefined) {
+                    mainToggle.checked = result.enhancementsEnabled;
+                }
+            });
+            
+            mainToggle.addEventListener('change', (e) => {
+                const enabled = e.target.checked;
+                chrome.storage?.local.set({ enhancementsEnabled: enabled }, () => {
+                    if (!enabled) {
+                        window.location.href = 'chrome://new-tab-page/';
+                    }
+                });
+            });
+        }
         
         document.getElementById('close-settings').addEventListener('click', () => {
             this.settingsPanel.classList.add('hidden');
@@ -84,6 +113,8 @@ export const UIManager = {
         this.settingsPanel.classList.add('hidden');
         this.canvas.classList.remove('blurred');
         this.scoreContainer.classList.remove('hidden');
+        const mainToggle = document.querySelector('.enhancement-toggle-container');
+        if (mainToggle) mainToggle.style.display = 'none';
     },
     
     showGameOver() {
@@ -91,5 +122,7 @@ export const UIManager = {
         this.menuPanel.classList.remove('hidden');
         this.canvas.classList.add('blurred');
         this.scoreContainer.classList.add('hidden');
+        const mainToggle = document.querySelector('.enhancement-toggle-container');
+        if (mainToggle) mainToggle.style.display = 'flex';
     }
 };
