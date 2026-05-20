@@ -50,3 +50,6 @@ export const ThemeManager = {
         root.style.setProperty('--button-text',     t.buttonText);
     }
 };
+
+ThemeManager.applyCSSVariables();
+AssetLoader.loadThemeAssets('dark');

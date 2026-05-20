@@ -1,22 +1,22 @@
 /* src/styles/main.css */
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;900&family=VT323&display=swap');
 
-/* ── Design tokens (defaults = classic theme) ─────────────────────────────── */
+/* ── Design tokens (defaults = dark theme) ────────────────────────────────── */
 :root {
-    --bg-color:       #f7f7f7;
-    --text-color:     #535353;
-    --accent-color:   #1a73e8;
-    --accent-soft:    rgba(26,115,232,0.12);
-    --ui-glow:        none;
-    --logo-gradient:  linear-gradient(90deg,#4285f4 25%,#ea4335 25%,#ea4335 50%,#fbbc05 50%,#fbbc05 75%,#34a853 75%);
-    --panel-bg:       rgba(255,255,255,0.88);
-    --panel-border:   rgba(0,0,0,0.10);
-    --input-bg:       rgba(255,255,255,0.98);
-    --select-bg:      rgba(255,255,255,0.95);
-    --button-bg:      #1a73e8;
-    --button-text:    #ffffff;
-    --logo-bg-color:   #ffffff;
-    --logo-char-color: #191a14;
+    --bg-color:       #0c0808;
+    --text-color:     #e0d4d4;
+    --accent-color:   #8b1a1a;
+    --accent-soft:    rgba(139,26,26,0.14);
+    --ui-glow:        0 0 18px rgba(139,26,26,0.45), 0 0 40px rgba(100,10,10,0.20);
+    --logo-gradient:  linear-gradient(90deg,#8b1a1a,#c0392b,#e0d4d4);
+    --panel-bg:       rgba(15,6,6,0.92);
+    --panel-border:   rgba(139,26,26,0.28);
+    --input-bg:       rgba(10,4,4,0.95);
+    --select-bg:      rgba(18,8,8,0.95);
+    --button-bg:      #8b1a1a;
+    --button-text:    #f0e4e4;
+    --logo-bg-color:   #0f0606;
+    --logo-char-color: #ffffff;
 
     /* Transition shared across all theme-reactive props */
     --t: 0.45s cubic-bezier(0.4,0,0.2,1);
@@ -130,6 +130,299 @@ canvas {
 #score-container.hidden { opacity: 0; }
 #score-label { margin-right: 15px; opacity: 0.7; }
 
+/* ── Daily quests (Today's Run) ────────────────────────────────────────────── */
+.daily-quests {
+    position: absolute;
+    top: 58px;
+    right: 20px;
+    z-index: 12;
+    width: min(280px, calc(100vw - 40px));
+    pointer-events: auto;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition:
+        background var(--t),
+        border-color var(--t),
+        box-shadow var(--t),
+        opacity 0.3s ease;
+}
+.daily-quests.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Widget visibility (manage widgets tags) */
+[data-widget].hidden,
+.statistics-widget.hidden {
+    display: none !important;
+    pointer-events: none !important;
+}
+.daily-quests.is-complete {
+    border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+.daily-quests__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+}
+.daily-quests__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.daily-quests__title {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--text-color);
+    text-transform: uppercase;
+    transition: color var(--t);
+}
+.daily-quests__progress {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--t);
+}
+.daily-quests__collapse {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--text-color);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background var(--t), border-color var(--t);
+}
+.daily-quests__chevron {
+    width: 16px;
+    height: 16px;
+    display: block;
+    transition: transform 0.25s ease;
+}
+.daily-quests.is-collapsed .daily-quests__chevron {
+    transform: rotate(-90deg);
+}
+.daily-quests__collapse:hover {
+    border-color: var(--accent-color);
+}
+.daily-quests__body {
+    padding: 0 14px 14px;
+    overflow: hidden;
+    max-height: 420px;
+    transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.25s ease;
+}
+.daily-quests.is-collapsed .daily-quests__body {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+}
+.daily-quests__track {
+    height: 4px;
+    border-radius: 4px;
+    background: var(--panel-border);
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.daily-quests__track-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, transparent));
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.daily-quests.is-complete .daily-quests__track-fill {
+    background: linear-gradient(90deg, #34a853, var(--accent-color));
+}
+.daily-quests__tagline {
+    margin: 0 0 10px;
+    font-size: 11px;
+    opacity: 0.55;
+    color: var(--text-color);
+    transition: color var(--t);
+}
+.daily-quests__list {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.daily-quests__item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 40px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+}
+.daily-quests__item:hover {
+    background: var(--accent-soft);
+    border-color: var(--panel-border);
+}
+.daily-quests__item.is-done {
+    opacity: 0.65;
+}
+.daily-quests__row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 6px 8px 10px;
+    cursor: pointer;
+    min-width: 0;
+}
+.daily-quests__check {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.daily-quests__box {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--text-color);
+    border-radius: 3px;
+    opacity: 0.45;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+.daily-quests__check:checked + .daily-quests__box {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    opacity: 1;
+}
+.daily-quests__check:checked + .daily-quests__box::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--button-text);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.daily-quests__text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: color 0.2s;
+    word-break: break-word;
+}
+.daily-quests__item.is-done .daily-quests__text {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+.daily-quests__remove {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin: 0 6px 0 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    opacity: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: opacity 0.15s, background 0.15s;
+}
+.daily-quests__remove svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+.daily-quests__item:hover .daily-quests__remove {
+    opacity: 0.45;
+}
+.daily-quests__remove:hover {
+    opacity: 1;
+    background: var(--accent-soft);
+}
+.daily-quests__add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.daily-quests__input {
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 36px;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.daily-quests__input::placeholder {
+    color: var(--text-color);
+    opacity: 0.4;
+}
+.daily-quests__input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-soft);
+}
+.daily-quests__add-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--t), transform 0.12s;
+}
+.daily-quests__add-btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+.daily-quests__add-btn:hover {
+    filter: brightness(1.08);
+}
+.daily-quests__add-btn:active {
+    transform: scale(0.96);
+}
+
 /* ── Overlay panels ──────────────────────────────────────────────────────── */
 .overlay-panel {
     position: absolute;
@@ -143,7 +436,7 @@ canvas {
     padding: 40px;
     text-align: center;
     pointer-events: auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18), var(--ui-glow);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
     transition:
         background var(--t),
         border-color var(--t),
@@ -321,24 +614,31 @@ kbd {
     flex-shrink: 0;
 }
 
-#game-stats-panel.overlay-panel {
+.statistics-widget {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#game-stats-panel.game-stats-panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 10px);
     min-width: 280px;
-    top: auto;
-    left: 20px;
-    right: auto;
-    bottom: 72px;
-    z-index: 20;
+    z-index: 55;
     transform: none;
     transform-origin: bottom left;
     text-align: left;
     padding: 24px 28px;
     opacity: 1;
     pointer-events: auto;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.2);
 }
-#game-stats-panel.overlay-panel.hidden {
+#game-stats-panel.game-stats-panel.hidden {
     opacity: 0;
     pointer-events: none;
-    transform: scale(0.92);
+    transform: scale(0.96);
 }
 
 .game-stats__title {
@@ -464,11 +764,17 @@ kbd {
     min-width: 320px;
     top: auto; left: auto;
     bottom: 70px; right: 20px;
+    z-index: 100;
     transform: none;
     transform-origin: bottom right;
     text-align: left;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.22);
 }
-#settings-panel.overlay-panel.hidden { transform: scale(0.9); }
+#settings-panel.overlay-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.96);
+}
 
 #settings-panel h2 {
     margin-bottom: 22px;
@@ -476,6 +782,164 @@ kbd {
     font-weight: 700;
     color: var(--text-color);
     transition: color var(--t);
+}
+
+.settings-section {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--panel-border);
+}
+.settings-section__title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+/* ── Widget manager (dropdown + tags) ────────────────────────────────────── */
+.widget-manage {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.widget-manage__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background var(--t), border-color var(--t);
+    box-shadow: none;
+}
+.widget-manage__trigger:hover {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-soft) 65%, transparent);
+    box-shadow: none;
+}
+.widget-manage__trigger[aria-expanded="true"] .widget-manage__chevron {
+    transform: rotate(180deg);
+}
+.widget-manage__chevron {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.widget-manage__panel {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    background: color-mix(in srgb, var(--panel-bg) 92%, transparent);
+}
+.widget-manage__panel.hidden {
+    display: none;
+}
+.widget-manage__hint {
+    margin: 0 0 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
+}
+.widget-manage__hint strong {
+    font-weight: 700;
+}
+.widget-manage__empty {
+    margin: 0;
+    font-size: 12px;
+    color: color-mix(in srgb, var(--text-color) 55%, transparent);
+}
+.widget-tag-group {
+    margin-bottom: 10px;
+}
+.widget-tag-group:last-child {
+    margin-bottom: 0;
+}
+.widget-tag-group__label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text-color) 50%, transparent);
+}
+.widget-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.widget-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 4px 6px 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.widget-tag--active {
+    background: var(--accent-color);
+    color: var(--button-text);
+    border: 1px solid var(--accent-color);
+}
+.widget-tag--inactive {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px dashed var(--panel-border);
+    padding-left: 4px;
+}
+.widget-tag__label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.widget-tag__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: none;
+    transition: background 0.15s, transform 0.12s;
+}
+.widget-tag__action--remove {
+    background: color-mix(in srgb, var(--button-text) 18%, transparent);
+    color: var(--button-text);
+}
+.widget-tag__action--remove:hover {
+    background: color-mix(in srgb, var(--button-text) 32%, transparent);
+    box-shadow: none;
+    transform: scale(1.05);
+}
+.widget-tag__action--add {
+    background: var(--accent-soft);
+    color: var(--accent-color);
+    margin-right: 2px;
+}
+.widget-tag__action--add:hover {
+    background: var(--accent-color);
+    color: var(--button-text);
+    box-shadow: none;
+    transform: scale(1.05);
 }
 
 .setting-row {
@@ -503,7 +967,11 @@ select {
 select:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: var(--ui-glow);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 22%, transparent);
+}
+#settings-panel select:focus,
+#game-stats-panel select:focus {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 22%, transparent);
 }
 
 /* checkbox */
@@ -514,7 +982,7 @@ input[type="checkbox"] {
 }
 
 /* ── Close / action button ───────────────────────────────────────────────── */
-button:not(.swatch-btn):not(.customize-button) {
+button:not(.swatch-btn):not(.customize-button):not(.daily-quests__add-btn):not(.daily-quests__remove):not(.daily-quests__collapse):not(.widget-manage__trigger):not(.widget-tag__action) {
     padding: 9px 14px;
     font-family: inherit;
     font-size: 14px;
@@ -527,10 +995,15 @@ button:not(.swatch-btn):not(.customize-button) {
     transition: background var(--t), color var(--t), transform 0.12s, box-shadow var(--t);
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-button:not(.swatch-btn):not(.customize-button):hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2), var(--ui-glow);
+button:not(.swatch-btn):not(.customize-button):not(.daily-quests__add-btn):not(.daily-quests__remove):not(.daily-quests__collapse):not(.widget-manage__trigger):not(.widget-tag__action):hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
-button:not(.swatch-btn):not(.customize-button):active { transform: scale(0.97); }
+button:not(.swatch-btn):not(.customize-button):not(.daily-quests__add-btn):not(.daily-quests__remove):not(.daily-quests__collapse):not(.widget-manage__trigger):not(.widget-tag__action):active { transform: scale(0.97); }
+
+#settings-panel button:not(.widget-manage__trigger):not(.widget-tag__action):hover,
+#game-stats-panel button:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
 
 #close-settings,
 #close-stats {

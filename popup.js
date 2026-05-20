@@ -1,4 +1,6 @@
 // popup.js — Dino Enhanced extension popup
+import { WidgetPrefs } from './shared/widgetPrefs.js';
+import { mountWidgetSettings, syncWidgetSettings } from './shared/widgetSettingsUI.js';
 
 // ── Theme design tokens (mirrors src/themes/presets.js) ──────────────────────
 const THEMES = {
@@ -96,7 +98,7 @@ const THEMES = {
 
 // ── Apply theme CSS variables to popup ───────────────────────────────────────
 function applyTheme(key) {
-    const t = THEMES[key] || THEMES.classic;
+    const t = THEMES[key] || THEMES.dark;
     const r = document.documentElement;
 
     r.style.setProperty('--bg',            t.bg);
@@ -150,13 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const fpsTog       = document.getElementById('popup-fps');
     const hiScoreEl    = document.getElementById('popup-hi-score');
     const openTabBtn   = document.getElementById('open-tab-btn');
+    const widgetListEl = document.getElementById('popup-widget-list');
 
 
     // ── Load all saved settings ───────────────────────────────────────────
     chrome.storage.local.get(
-        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'fps', 'hiScore'],
-        (result) => {
-            const theme = result.theme || 'classic';
+        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'fps', 'hiScore', 'widgetPrefs'],
+        async (result) => {
+            await WidgetPrefs.load();
+            mountWidgetSettings(widgetListEl);
+            const theme = result.theme || 'dark';
 
             // Apply theme to popup immediately
             applyTheme(theme);
@@ -245,6 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (changes.fps !== undefined) {
             fpsTog.checked = !!changes.fps.newValue;
+        }
+        if (changes.widgetPrefs) {
+            WidgetPrefs.mergeSaved(changes.widgetPrefs.newValue);
+            syncWidgetSettings(widgetListEl);
         }
     });
 });

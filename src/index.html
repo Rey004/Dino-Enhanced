@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="../assets/brand/icon-logo.svg">
     <link rel="stylesheet" href="styles/main.css">
 </head>
-<body>
+<body data-theme="dark">
     <div id="game-container">
         <!-- Main Game Canvas -->
         <canvas id="game-canvas"></canvas>
@@ -23,6 +23,36 @@
                 <span id="score-label">HI <span id="hi-score">00000</span></span>
                 <span id="current-score">00000</span>
             </div>
+
+            <aside id="daily-quests-widget" class="daily-quests" data-widget="dailyQuests" aria-label="Today's Run">
+                <header class="daily-quests__header">
+                    <div class="daily-quests__heading">
+                        <span class="daily-quests__title">Today's Run</span>
+                        <span class="daily-quests__progress" id="quests-progress">0/3</span>
+                    </div>
+                    <button type="button" id="quests-collapse-toggle" class="daily-quests__collapse" title="Collapse run" aria-expanded="true" aria-controls="daily-quests-body">
+                        <svg class="daily-quests__chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                </header>
+                <div id="daily-quests-body" class="daily-quests__body">
+                    <div class="daily-quests__track" aria-hidden="true">
+                        <div class="daily-quests__track-fill" id="quests-xp-fill"></div>
+                    </div>
+                    <p class="daily-quests__tagline">Clear checkpoints. Level up your day.</p>
+                    <ul id="quests-list" class="daily-quests__list"></ul>
+                    <form id="quests-add-form" class="daily-quests__add">
+                        <input type="text" id="quests-add-input" class="daily-quests__input" placeholder="Add checkpoint…" maxlength="64" autocomplete="off">
+                        <button type="submit" class="daily-quests__add-btn" title="Add checkpoint" aria-label="Add checkpoint">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </aside>
 
             <div id="native-ui-layer" class="native-ui">
                 <div class="top-nav">
@@ -45,42 +75,43 @@
                 </div>
             </div>
             
-            <div id="game-stats-panel" class="overlay-panel game-stats-panel hidden" aria-label="Game statistics">
-                <h2 class="game-stats__title">Statistics</h2>
-                <dl class="game-stats__grid">
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">High Score</dt>
-                        <dd class="game-stats__value" id="stat-hi-score">00000</dd>
-                    </div>
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">Last Run</dt>
-                        <dd class="game-stats__value" id="stat-last-score">00000</dd>
-                    </div>
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">Games Played</dt>
-                        <dd class="game-stats__value" id="stat-games-played">0</dd>
-                    </div>
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">Average Score</dt>
-                        <dd class="game-stats__value" id="stat-avg-score">00000</dd>
-                    </div>
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">Total Distance</dt>
-                        <dd class="game-stats__value" id="stat-total-distance">00000</dd>
-                    </div>
-                    <div class="game-stats__item">
-                        <dt class="game-stats__label">Play Time</dt>
-                        <dd class="game-stats__value game-stats__value--time" id="stat-play-time">0s</dd>
-                    </div>
-                </dl>
-                <button id="close-stats">Close</button>
-            </div>
-
             <div id="bottom-left-bar" class="bottom-left-bar">
-                <div id="stats-button" title="Game statistics" class="customize-button stats-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M5 9.2h3.8V19H5V9.2zM10.2 5h3.8v14h-3.8V5zm5.2 6.2h3.8V19h-3.8v-7.8z"/>
-                    </svg>
+                <div id="statistics-widget" class="statistics-widget" data-widget="gameStats">
+                    <div id="stats-button" title="Game statistics" class="customize-button stats-button" aria-expanded="false" aria-controls="game-stats-panel">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M5 9.2h3.8V19H5V9.2zM10.2 5h3.8v14h-3.8V5zm5.2 6.2h3.8V19h-3.8v-7.8z"/>
+                        </svg>
+                    </div>
+                    <div id="game-stats-panel" class="game-stats-panel overlay-panel hidden" aria-label="Game statistics">
+                        <h2 class="game-stats__title">Statistics</h2>
+                        <dl class="game-stats__grid">
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">High Score</dt>
+                                <dd class="game-stats__value" id="stat-hi-score">00000</dd>
+                            </div>
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">Last Run</dt>
+                                <dd class="game-stats__value" id="stat-last-score">00000</dd>
+                            </div>
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">Games Played</dt>
+                                <dd class="game-stats__value" id="stat-games-played">0</dd>
+                            </div>
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">Average Score</dt>
+                                <dd class="game-stats__value" id="stat-avg-score">00000</dd>
+                            </div>
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">Total Distance</dt>
+                                <dd class="game-stats__value" id="stat-total-distance">00000</dd>
+                            </div>
+                            <div class="game-stats__item">
+                                <dt class="game-stats__label">Play Time</dt>
+                                <dd class="game-stats__value game-stats__value--time" id="stat-play-time">0s</dd>
+                            </div>
+                        </dl>
+                        <button id="close-stats">Close</button>
+                    </div>
                 </div>
                 <div class="enhancement-toggle-container">
                     <label class="ui-switch" title="Turn off enhanced mode">
@@ -105,6 +136,9 @@
                     </svg>
                     <h2 style="margin: 0;">Settings</h2>
                 </div>
+                <div class="settings-section">
+                    <div id="settings-widget-list"></div>
+                </div>
                 <div class="setting-row">
                     <label>Theme</label>
                     <select id="theme-select">
@@ -112,7 +146,7 @@
                         <option value="cyberpunk">Cyberpunk</option>
                         <option value="nature">Nature</option>
                         <option value="space">Space</option>
-                        <option value="dark">Dark</option>
+                        <option value="dark" selected>Dark</option>
                     </select>
                 </div>
                 <div class="setting-row">

@@ -1,5 +1,6 @@
 import { ThemeManager } from '../themes/themeManager.js';
 import { formatPlayTime, formatScore, GameStats } from '../utils/gameStats.js';
+import { WidgetManager } from './widgetManager.js';
 
 export const UIManager = {
     scoreLabel: null,
@@ -41,15 +42,22 @@ export const UIManager = {
 
         settingsButton.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (this.statsPanel) this.statsPanel.classList.add('hidden');
+            if (this.statsPanel) {
+                this.statsPanel.classList.add('hidden');
+                this.statsButton?.setAttribute('aria-expanded', 'false');
+            }
             this.settingsPanel.classList.toggle('hidden');
         });
 
         if (this.statsButton && this.statsPanel) {
             this.statsButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                if (!WidgetManager.isEnabled('gameStats')) return;
                 this.settingsPanel.classList.add('hidden');
+                const opening = this.statsPanel.classList.contains('hidden');
                 this.statsPanel.classList.toggle('hidden');
+                this.statsButton.setAttribute('aria-expanded', String(opening));
+                if (opening) this.updateGameStats();
             });
         }
 
@@ -62,10 +70,12 @@ export const UIManager = {
                 }
             }
             if (this.statsPanel && !this.statsPanel.classList.contains('hidden')) {
-                const isClickInside = this.statsPanel.contains(e.target);
-                const isStatsButton = this.statsButton?.contains(e.target);
-                if (!isClickInside && !isStatsButton) {
+                const statsWidget = document.getElementById('statistics-widget');
+                const isClickInside =
+                    this.statsPanel.contains(e.target) || statsWidget?.contains(e.target);
+                if (!isClickInside) {
                     this.statsPanel.classList.add('hidden');
+                    this.statsButton?.setAttribute('aria-expanded', 'false');
                 }
             }
         });
@@ -96,6 +106,7 @@ export const UIManager = {
         if (closeStats && this.statsPanel) {
             closeStats.addEventListener('click', () => {
                 this.statsPanel.classList.add('hidden');
+                this.statsButton?.setAttribute('aria-expanded', 'false');
             });
         }
 
@@ -161,15 +172,20 @@ export const UIManager = {
     
     showIdleChrome() {
         if (this.bottomLeftBar) this.bottomLeftBar.style.display = 'flex';
+        WidgetManager.setGameActive(false);
     },
 
     hideOverlays() {
         this.menuPanel.classList.add('hidden');
         this.settingsPanel.classList.add('hidden');
-        if (this.statsPanel) this.statsPanel.classList.add('hidden');
+        if (this.statsPanel) {
+            this.statsPanel.classList.add('hidden');
+            this.statsButton?.setAttribute('aria-expanded', 'false');
+        }
         this.canvas.classList.remove('blurred');
         this.scoreContainer.classList.remove('hidden');
         if (this.bottomLeftBar) this.bottomLeftBar.style.display = 'none';
+        WidgetManager.setGameActive(true);
     },
 
     showGameOver() {

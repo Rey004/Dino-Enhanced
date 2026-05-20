@@ -6,8 +6,15 @@ import { ThemeManager } from './themes/themeManager.js';
 import { setupInput } from './utils/input.js';
 import { initDino } from './entities/dino.js';
 import { GameStats } from './utils/gameStats.js';
+import { DailyQuests } from './utils/dailyQuests.js';
+import { initDailyQuestsUI } from './ui/dailyQuestsUI.js';
+import { WidgetManager } from './ui/widgetManager.js';
+
+const DEFAULT_THEME = 'dark';
 
 function init() {
+    ThemeManager.setTheme(DEFAULT_THEME);
+
     // Load saved data
     chrome.storage?.local.get(['enhancementsEnabled', 'hiScore', 'theme', 'particles', 'audio'], async (result) => {
         if (result.enhancementsEnabled === false) {
@@ -29,13 +36,9 @@ function init() {
         GameStats.data.hiScore = GameState.hiScore;
         UIManager.updateHiScore(GameState.hiScore);
         UIManager.updateGameStats(GameStats.data);
-        if (result.theme) {
-            ThemeManager.setTheme(result.theme);
-            UIManager.setActiveSwatch(result.theme);
-        } else {
-            ThemeManager.setTheme('classic');
-            UIManager.setActiveSwatch('classic');
-        }
+        const theme = result.theme || DEFAULT_THEME;
+        ThemeManager.setTheme(theme);
+        UIManager.setActiveSwatch(theme);
         if (result.particles !== undefined) {
             document.getElementById('toggle-particles').checked = result.particles;
         }
@@ -78,7 +81,10 @@ function init() {
     });
 
     Renderer.init();
-    UIManager.init();
+    WidgetManager.init().then(() => {
+        UIManager.init();
+        DailyQuests.load().then(() => initDailyQuestsUI());
+    });
     setupInput();
     initDino();
     
