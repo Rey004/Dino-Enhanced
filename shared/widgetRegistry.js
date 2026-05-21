@@ -19,6 +19,14 @@ export const WIDGET_REGISTRY = [
         elementIds: ['statistics-widget'],
         hideDuringPlay: true,
     },
+    {
+        id: 'enhancedModeToggle',
+        label: 'Enhanced Mode',
+        description: 'Shortcut for turning the enhanced new-tab experience on or off',
+        defaultEnabled: true,
+        elementIds: ['enhancement-toggle-widget'],
+        hideDuringPlay: true,
+    },
 ];
 
 export function getWidgetDef(id) {

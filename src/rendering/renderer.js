@@ -20,7 +20,8 @@ export const Renderer = {
         
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
-        
+
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.scale(dpr, dpr);
         
         GameState.canvasWidth = rect.width;

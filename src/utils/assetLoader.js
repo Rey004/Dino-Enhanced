@@ -1,35 +1,50 @@
+import { themes } from '../themes/presets.js';
+
+export function themeHasAssets(themeName) {
+    return themes[themeName]?.hasThemeAssets === true;
+}
+
+function themeAssetUrl(themeName, fileName) {
+    const assetPath = themes[themeName]?.assetPath || themeName;
+    const path = `assets/themes/${assetPath}/${fileName}`;
+    if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+        return chrome.runtime.getURL(path);
+    }
+    return `../${path}`;
+}
+
 export const AssetLoader = {
     images: {},
-    
+
     async loadThemeAssets(themeName) {
-        // We can expand this list as more assets are added
-        const assets = [
-            'idle', 'run-1', 'run-2', 'duck-1', 'duck-2', 'dead',
+        if (!themeHasAssets(themeName)) return;
+
+        const assets = themes[themeName].assets || [
+            'idle', 'run-1', 'run-2', 'duck', 'dead',
             'small-obstacle', 'large-obstacle', 'small-fly', 'large-fly',
             'ground', 'background',
         ];
-        
-        const promises = assets.map(asset => {
-            return new Promise(resolve => {
-                const img = new Image();
+
+        const promises = assets.map((asset) => {
+            return new Promise((resolve) => {
                 const key = `${themeName}_${asset}`;
-                
-                if (this.images[key] !== undefined) {
+
+                if (this.images[key]) {
                     resolve();
                     return;
                 }
-                
-                img.src = `../assets/themes/${themeName}/${asset}.webp`;
-                
+
+                const img = new Image();
+                img.src = themeAssetUrl(themeName, `${asset}.webp`);
+
                 img.onload = () => {
                     this.images[key] = img;
                     resolve();
                 };
-                
+
                 img.onerror = () => {
-                    // Try .png as a fallback
                     const fallbackImg = new Image();
-                    fallbackImg.src = `../assets/themes/${themeName}/${asset}.png`;
+                    fallbackImg.src = themeAssetUrl(themeName, `${asset}.png`);
                     fallbackImg.onload = () => {
                         this.images[key] = fallbackImg;
                         resolve();
@@ -41,11 +56,12 @@ export const AssetLoader = {
                 };
             });
         });
-        
+
         await Promise.all(promises);
     },
-    
+
     getSprite(themeName, asset) {
+        if (!themeHasAssets(themeName)) return null;
         return this.images[`${themeName}_${asset}`] || null;
-    }
+    },
 };

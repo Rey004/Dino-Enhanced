@@ -1,5 +1,16 @@
-// background.js
-// A minimal service worker for the extension lifecycle.
+// background.js — service worker
+import { toolbarIconPaths } from './shared/brand.js';
+
+function applyToolbarIcon() {
+    if (!chrome.action?.setIcon) return;
+    chrome.action.setIcon({ path: toolbarIconPaths() });
+}
+
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Dino Enhanced Extension installed');
+    console.log('DinoDash extension installed');
+    applyToolbarIcon();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+    applyToolbarIcon();
 });

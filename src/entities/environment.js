@@ -10,8 +10,9 @@ let bgOffsetX = 0;   // slow parallax scroll for background
 
 export function updateEnvironment(dt) {
     if (GameState.currentPhase === 'playing') {
-        groundOffsetX += GameState.speed * (dt / 8);
-        bgOffsetX     += GameState.speed * (dt / 8) * 0.20; // 20% of ground speed
+        const groundScroll = GameState.speed * (dt / 16);
+        groundOffsetX += groundScroll;
+        bgOffsetX     += groundScroll * 0.20; // 20% of ground speed
     }
     
     // Generate clouds/stars occasionally
@@ -61,14 +62,18 @@ export function drawEnvironment() {
     const groundSprite = AssetLoader.getSprite(themeName, 'ground');
 
     if (groundSprite && groundSprite.width > 0) {
-        const scale      = GameState.canvasHeight / groundSprite.height;
+        const scale      = (GameState.canvasHeight / groundSprite.height) * (theme.groundAssetScale || 1);
         const drawWidth  = groundSprite.width * scale;
-        const drawHeight = GameState.canvasHeight;
+        const drawHeight = groundSprite.height * scale;
         const offset     = groundOffsetX % drawWidth;
+        const y          = (theme.groundSurfaceRatio
+            ? GameState.GROUND_Y - (drawHeight * theme.groundSurfaceRatio)
+            : 19 + (GameState.canvasHeight - drawHeight))
+            + (theme.groundAssetOffsetY || 0);
 
         let x = -offset;
         while (x < GameState.canvasWidth) {
-            ctx.drawImage(groundSprite, x, 19, drawWidth, drawHeight);
+            ctx.drawImage(groundSprite, x, y, drawWidth, drawHeight);
             x += drawWidth;
         }
     } else {

@@ -1,83 +1,11 @@
-// popup.js — Dino Enhanced extension popup
+// popup.js — DinoDash extension popup
 import { WidgetPrefs } from './shared/widgetPrefs.js';
 import { mountWidgetSettings, syncWidgetSettings } from './shared/widgetSettingsUI.js';
 
 // ── Theme design tokens (mirrors src/themes/presets.js) ──────────────────────
 const THEMES = {
-    classic: {
-        name: 'Classic',
-        bg:           '#f7f7f7',
-        surface:      'rgba(255,255,255,0.88)',
-        border:       'rgba(0,0,0,0.10)',
-        text:         '#535353',
-        textMuted:    'rgba(83,83,83,0.6)',
-        accent:       '#1a73e8',
-        accentSoft:   'rgba(26,115,232,0.12)',
-        glow:         'none',
-        btnBg:        '#1a73e8',
-        btnText:      '#ffffff',
-        inputBg:      'rgba(255,255,255,0.98)',
-        selectBg:     'rgba(255,255,255,0.95)',
-        logoGradient: 'linear-gradient(90deg,#4285f4 25%,#ea4335 25%,#ea4335 50%,#fbbc05 50%,#fbbc05 75%,#34a853 75%)',
-        logoBg:       '#ffffff',
-        logoChar:     '#191a14',
-    },
-    cyberpunk: {
-        name: 'Cyberpunk',
-        bg:           '#0a0a1a',
-        surface:      'rgba(8,8,28,0.88)',
-        border:       'rgba(0,255,255,0.28)',
-        text:         '#00ffff',
-        textMuted:    'rgba(0,255,255,0.5)',
-        accent:       '#00ffff',
-        accentSoft:   'rgba(0,255,255,0.10)',
-        glow:         '0 0 12px rgba(0,255,255,0.4)',
-        btnBg:        '#00ffff',
-        btnText:      '#0a0a1a',
-        inputBg:      'rgba(4,4,20,0.90)',
-        selectBg:     'rgba(4,4,20,0.90)',
-        logoGradient: 'linear-gradient(90deg,#ff00ff,#00ffff)',
-        logoBg:       '#08081c',
-        logoChar:     '#ffffff',
-    },
-    nature: {
-        name: 'Nature',
-        bg:           '#dff0e8',
-        surface:      'rgba(240,255,245,0.88)',
-        border:       'rgba(46,139,87,0.22)',
-        text:         '#2E4A2E',
-        textMuted:    'rgba(46,74,46,0.55)',
-        accent:       '#2E8B57',
-        accentSoft:   'rgba(46,139,87,0.14)',
-        glow:         'none',
-        btnBg:        '#2E8B57',
-        btnText:      '#ffffff',
-        inputBg:      'rgba(255,255,255,0.92)',
-        selectBg:     'rgba(240,255,245,0.95)',
-        logoGradient: 'linear-gradient(90deg,#2E8B57,#56ab2f)',
-        logoBg:       '#f0fff5',
-        logoChar:     '#2E4A2E',
-    },
-    space: {
-        name: 'Space',
-        bg:           '#00001a',
-        surface:      'rgba(4,4,22,0.88)',
-        border:       'rgba(167,139,250,0.22)',
-        text:         '#c8d6f0',
-        textMuted:    'rgba(200,214,240,0.5)',
-        accent:       '#a78bfa',
-        accentSoft:   'rgba(167,139,250,0.12)',
-        glow:         '0 0 12px rgba(167,139,250,0.35)',
-        btnBg:        '#a78bfa',
-        btnText:      '#04041a',
-        inputBg:      'rgba(2,2,16,0.90)',
-        selectBg:     'rgba(4,4,22,0.90)',
-        logoGradient: 'linear-gradient(90deg,#a78bfa,#60a5fa)',
-        logoBg:       '#040416',
-        logoChar:     '#ffffff',
-    },
     dark: {
-        name: 'Dark',
+        name: 'Dark Valley',
         bg:           '#0c0808',
         surface:      'rgba(15,6,6,0.92)',
         border:       'rgba(139,26,26,0.28)',
@@ -94,11 +22,30 @@ const THEMES = {
         logoBg:       '#0f0606',
         logoChar:     '#ffffff',
     },
+    mysticForest: {
+        name: 'Mystic Forest',
+        bg:           '#06130f',
+        surface:      'rgba(5,17,13,0.92)',
+        border:       'rgba(143,177,130,0.28)',
+        text:         '#c7d6b5',
+        textMuted:    'rgba(199,214,181,0.56)',
+        accent:       '#9fcf8f',
+        accentSoft:   'rgba(159,207,143,0.16)',
+        glow:         '0 0 14px rgba(143,191,134,0.34)',
+        btnBg:        '#8fbf86',
+        btnText:      '#06130f',
+        inputBg:      'rgba(3,13,10,0.95)',
+        selectBg:     'rgba(5,17,13,0.95)',
+        logoGradient: 'linear-gradient(90deg,#6f8f72,#9fcf8f,#d9e8a8)',
+        logoBg:       '#06130f',
+        logoChar:     '#d9e8a8',
+    },
 };
 
 // ── Apply theme CSS variables to popup ───────────────────────────────────────
 function applyTheme(key) {
-    const t = THEMES[key] || THEMES.dark;
+    const resolvedKey = THEMES[key] ? key : 'dark';
+    const t = THEMES[resolvedKey];
     const r = document.documentElement;
 
     r.style.setProperty('--bg',            t.bg);
@@ -117,7 +64,7 @@ function applyTheme(key) {
     r.style.setProperty('--logo-bg-color',   t.logoBg);
     r.style.setProperty('--logo-char-color', t.logoChar);
 
-    document.body.setAttribute('data-theme', key);
+    document.body.setAttribute('data-theme', resolvedKey);
 
     // Update the theme name chip
     const nameEl = document.getElementById('popup-theme-name');
@@ -127,6 +74,8 @@ function applyTheme(key) {
     document.querySelectorAll('input:checked + .slider').forEach(el => {
         el.style.background = t.accent;
     });
+
+    return resolvedKey;
 }
 
 // ── Propagate setting change to the open new-tab page ────────────────────────
@@ -164,8 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const theme = result.theme || 'dark';
 
             // Apply theme to popup immediately
-            applyTheme(theme);
-            themeSelect.value = theme;
+            const activeTheme = applyTheme(theme);
+            themeSelect.value = activeTheme;
 
             // Toggles
             enhToggle.checked    = result.enhancementsEnabled !== false;
@@ -236,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (changes.theme) {
             const key = changes.theme.newValue;
-            applyTheme(key);
-            themeSelect.value = key;
+            const activeTheme = applyTheme(key);
+            themeSelect.value = activeTheme;
         }
         if (changes.hiScore !== undefined) {
             hiScoreEl.textContent = (changes.hiScore.newValue || 0).toString().padStart(5, '0');

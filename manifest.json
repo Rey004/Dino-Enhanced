@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Dino Enhanced",
+  "name": "DinoDash",
   "version": "1.0",
   "description": "An advanced modern reimagining of the chrome tab page and the classic Chrome Dino offline game.",
   "icons": {
     "16": "assets/brand/icon-16.png",
+    "32": "assets/brand/icon-32.png",
     "48": "assets/brand/icon-48.png",
     "128": "assets/brand/icon-128.png"
   },
@@ -23,9 +24,10 @@
       "48": "assets/brand/icon-48.png"
     },
     "default_popup": "popup.html",
-    "default_title": "Dino Enhanced"
+    "default_title": "DinoDash"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   }
 }

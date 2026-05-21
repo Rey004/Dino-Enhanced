@@ -12,12 +12,19 @@ import { WidgetManager } from './ui/widgetManager.js';
 
 const DEFAULT_THEME = 'dark';
 
-function init() {
-    ThemeManager.setTheme(DEFAULT_THEME);
+function storageGet(keys) {
+    return new Promise((resolve) => {
+        if (!chrome.storage?.local) {
+            resolve({});
+            return;
+        }
+        chrome.storage.local.get(keys, resolve);
+    });
+}
 
-    // Load saved data
-    chrome.storage?.local.get(['enhancementsEnabled', 'hiScore', 'theme', 'particles', 'audio'], async (result) => {
-        if (result.enhancementsEnabled === false) {
+async function applySavedSettings(result) {
+    if (result.enhancementsEnabled === false) {
+        if (chrome.tabs?.getCurrent) {
             chrome.tabs.getCurrent((tab) => {
                 if (tab) {
                     chrome.tabs.update(tab.id, { url: 'chrome://new-tab-page/' });
@@ -25,71 +32,99 @@ function init() {
                     window.location.href = 'chrome://new-tab-page/';
                 }
             });
-            return; // Stop initialization
+        } else {
+            window.location.href = 'chrome://new-tab-page/';
         }
-        
-        // Show game UI
-        document.body.style.opacity = '1';
+        return false;
+    }
 
-        await GameStats.load();
-        GameState.hiScore = Math.max(result.hiScore || 0, GameStats.data.hiScore || 0);
-        GameStats.data.hiScore = GameState.hiScore;
-        UIManager.updateHiScore(GameState.hiScore);
-        UIManager.updateGameStats(GameStats.data);
-        const theme = result.theme || DEFAULT_THEME;
-        ThemeManager.setTheme(theme);
-        UIManager.setActiveSwatch(theme);
-        if (result.particles !== undefined) {
-            document.getElementById('toggle-particles').checked = result.particles;
-        }
-        if (result.audio !== undefined) {
-            document.getElementById('toggle-audio').checked = result.audio;
-        }
-    });
+    document.body.style.opacity = '1';
 
-    // Listen for changes from the popup
-    chrome.storage?.onChanged.addListener((changes, namespace) => {
-        if (namespace !== 'local') return;
+    await GameStats.load();
+    GameState.hiScore = Math.max(result.hiScore || 0, GameStats.data.hiScore || 0);
+    GameStats.data.hiScore = GameState.hiScore;
 
-        if (changes.enhancementsEnabled?.newValue === false) {
-            chrome.tabs.getCurrent((tab) => {
-                if (tab) chrome.tabs.update(tab.id, { url: 'chrome://new-tab-page/' });
-            });
-        }
+    const theme = result.theme || DEFAULT_THEME;
+    const activeTheme = await ThemeManager.setTheme(theme);
 
-        if (changes.theme) {
-            const key = changes.theme.newValue;
-            ThemeManager.setTheme(key);
-            UIManager.setActiveSwatch(key);
-        }
+    UIManager.updateHiScore(GameState.hiScore);
+    UIManager.updateGameStats(GameStats.data);
+    UIManager.setActiveSwatch(activeTheme);
 
-        if (changes.fps) {
-            const fpsCounter = document.getElementById('fps-counter');
-            if (fpsCounter) {
-                fpsCounter.classList.toggle('hidden', !changes.fps.newValue);
-                document.getElementById('toggle-fps').checked = changes.fps.newValue;
+    const particlesTog = document.getElementById('toggle-particles');
+    const audioTog = document.getElementById('toggle-audio');
+    if (result.particles !== undefined && particlesTog) {
+        particlesTog.checked = result.particles;
+    }
+    if (result.audio !== undefined && audioTog) {
+        audioTog.checked = result.audio;
+    }
+
+    return true;
+}
+
+async function init() {
+    try {
+        chrome.storage?.onChanged.addListener((changes, namespace) => {
+            if (namespace !== 'local') return;
+
+            if (changes.enhancementsEnabled?.newValue === false) {
+                chrome.tabs.getCurrent((tab) => {
+                    if (tab) chrome.tabs.update(tab.id, { url: 'chrome://new-tab-page/' });
+                });
             }
-        }
 
-        if (changes.gameStats || changes.hiScore) {
-            GameStats.load().then(() => {
-                GameState.hiScore = GameStats.data.hiScore;
-                UIManager.updateHiScore(GameState.hiScore);
-                UIManager.updateGameStats(GameStats.data);
-            });
-        }
-    });
+            if (changes.theme) {
+                const key = changes.theme.newValue;
+                ThemeManager.setTheme(key).then((activeTheme) => {
+                    UIManager.setActiveSwatch(activeTheme);
+                });
+            }
 
-    Renderer.init();
-    WidgetManager.init().then(() => {
+            if (changes.fps) {
+                const fpsCounter = document.getElementById('fps-counter');
+                if (fpsCounter) {
+                    fpsCounter.classList.toggle('hidden', !changes.fps.newValue);
+                    const fpsToggle = document.getElementById('toggle-fps');
+                    if (fpsToggle) fpsToggle.checked = changes.fps.newValue;
+                }
+            }
+
+            if (changes.gameStats || changes.hiScore) {
+                GameStats.load().then(() => {
+                    GameState.hiScore = GameStats.data.hiScore;
+                    UIManager.updateHiScore(GameState.hiScore);
+                    UIManager.updateGameStats(GameStats.data);
+                });
+            }
+        });
+
+        Renderer.init();
+        setupInput();
+
+        await WidgetManager.init();
         UIManager.init();
-        DailyQuests.load().then(() => initDailyQuestsUI());
-    });
-    setupInput();
-    initDino();
-    
-    // Start rendering even in menu state
-    GameLoop.start();
+        initDino();
+
+        const result = await storageGet([
+            'enhancementsEnabled',
+            'hiScore',
+            'theme',
+            'particles',
+            'audio',
+        ]);
+
+        const ready = await applySavedSettings(result);
+        if (!ready) return;
+
+        await DailyQuests.load();
+        initDailyQuestsUI();
+
+        GameLoop.start();
+    } catch (err) {
+        console.error('DinoDash init failed:', err);
+        document.body.style.opacity = '1';
+    }
 }
 
 window.addEventListener('load', init);

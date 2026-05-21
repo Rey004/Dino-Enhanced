@@ -30,7 +30,7 @@ export function renderDailyQuests() {
                 <span class="daily-quests__box" aria-hidden="true"></span>
                 <span class="daily-quests__text">${escapeHtml(q.text)}</span>
             </label>
-            <button type="button" class="daily-quests__remove" data-id="${q.id}" title="Remove checkpoint" aria-label="Remove checkpoint">
+            <button type="button" class="daily-quests__remove" data-id="${q.id}" data-tooltip="Remove checkpoint" aria-label="Remove checkpoint">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -49,7 +49,7 @@ export function renderDailyQuests() {
     if (toggleBtn) {
         const expanded = !DailyQuests.collapsed;
         toggleBtn.setAttribute('aria-expanded', String(expanded));
-        toggleBtn.title = expanded ? 'Collapse run' : 'Expand run';
+        toggleBtn.dataset.tooltip = expanded ? 'Collapse run' : 'Expand run';
     }
 }
 
@@ -111,4 +111,3 @@ export function initDailyQuestsUI() {
 
     renderDailyQuests();
 }
-

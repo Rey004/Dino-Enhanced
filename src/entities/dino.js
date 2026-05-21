@@ -12,7 +12,7 @@ const DINO_DUCK_WIDTH = 59;
 const DINO_DUCK_HEIGHT = BLOCK;
 
 export const dino = {
-    x: 50,
+    x: 300,
     y: 0,
     width: DINO_STAND_WIDTH,
     height: DINO_STAND_HEIGHT,
@@ -93,7 +93,7 @@ export function drawDino() {
     if (GameState.currentPhase === 'gameover') {
         spriteAsset = 'dead';
     } else if (dino.isDucking) {
-        spriteAsset = Math.floor(performance.now() / 120) % 2 === 0 ? 'duck-1' : 'duck-2';
+        spriteAsset = 'duck';
     } else if (!dino.isJumping && GameState.currentPhase === 'playing') {
         // Alternate running frames based on time
         spriteAsset = Math.floor(performance.now() / 120) % 2 === 0 ? 'run-1' : 'run-2';
@@ -101,26 +101,18 @@ export function drawDino() {
     
     const sprite = AssetLoader.getSprite(themeName, spriteAsset);
     
-    if (theme.hasGlow) {
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = theme.dinoColor;
-    } else {
-        ctx.shadowBlur = 0;
-    }
+    ctx.shadowBlur = 0;
     
     if (sprite) {
         // Draw the sprite larger than the hitbox to make it pop,
         // but keep the bottom aligned to the ground so it doesn't float.
-        const scale = 1.5;
-        let originalWidth = DINO_STAND_WIDTH;
-        let originalHeight = BLOCK;
-        if (dino.isDucking) {
-            originalWidth = DINO_DUCK_WIDTH;
-            originalHeight = BLOCK / 2;
-        }
+        const scale = dino.isDucking ? 2.5 : 1.5;
+        const spriteWidth = sprite.naturalWidth || sprite.width;
+        const spriteHeight = sprite.naturalHeight || sprite.height;
+        const spriteAspectRatio = spriteWidth / spriteHeight;
         
         const drawHeight = dino.height * scale;
-        const drawWidth = drawHeight * (originalWidth / originalHeight);
+        const drawWidth = drawHeight * spriteAspectRatio;
         const offsetX = (drawWidth - dino.width) / 2;
         const offsetY = drawHeight - dino.height;
         

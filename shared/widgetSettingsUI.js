@@ -85,16 +85,39 @@ export function mountWidgetSettings(container, { onChange } = {}) {
     if (!container) return;
 
     container._widgetOnChange = onChange;
+    const expanded = container.dataset.widgetDisplay === 'expanded';
+
+    if (expanded) {
+        container.innerHTML = `
+        <div class="widget-manage widget-manage--expanded" data-widget-manage>
+            <p class="widget-manage__hint">Remove widgets with <strong>&times;</strong>. Add them back with <strong>+</strong>.</p>
+            <div data-widget-tag-host></div>
+        </div>`;
+
+        refreshTags(container);
+        return;
+    }
+
     container.innerHTML = `
         <div class="widget-manage" data-widget-manage>
-            <button type="button" class="widget-manage__trigger" aria-expanded="false">
-                <span>Manage widgets</span>
+            <button type="button" class="widget-manage__trigger" aria-expanded="false" data-tooltip="Show widget controls">
+                <span class="widget-manage__trigger-label">
+                    <span class="widget-manage__icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="5" width="16" height="14" rx="2"/>
+                            <path d="M4 9h16"/>
+                            <path d="M8 14h3"/>
+                            <path d="M14 14h2"/>
+                        </svg>
+                    </span>
+                    <span>Manage widgets</span>
+                </span>
                 <svg class="widget-manage__chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="6 9 12 15 18 9"/>
                 </svg>
             </button>
             <div class="widget-manage__panel hidden" role="region" aria-label="Widget management">
-                <p class="widget-manage__hint">Use <strong>×</strong> to remove a widget, <strong>+</strong> to add it back.</p>
+                <p class="widget-manage__hint">Remove widgets with <strong>&times;</strong>. Add them back with <strong>+</strong>.</p>
                 <div data-widget-tag-host></div>
             </div>
         </div>`;

@@ -1,21 +1,22 @@
 import { themes } from './presets.js';
 import { GameState } from '../engine/state.js';
 import { AssetLoader } from '../utils/assetLoader.js';
-
 export const ThemeManager = {
     current: themes.dark,
     activeThemeName: 'dark',
     
-    setTheme(themeKey) {
-        if (themes[themeKey]) {
-            this.current = themes[themeKey];
-            this.activeThemeName = themeKey;
-            GameState.isDarkMode = ['cyberpunk', 'space', 'dark'].includes(themeKey);
-            this.applyCSSVariables();
-            
-            // Fire and forget: load assets for this theme
-            AssetLoader.loadThemeAssets(themeKey);
+    async setTheme(themeKey) {
+        const resolvedThemeKey = themes[themeKey] ? themeKey : 'dark';
+        this.current = themes[resolvedThemeKey];
+        this.activeThemeName = resolvedThemeKey;
+        GameState.isDarkMode = true;
+        this.applyCSSVariables();
+
+        if (themes[resolvedThemeKey].hasThemeAssets) {
+            await AssetLoader.loadThemeAssets(resolvedThemeKey);
         }
+
+        return resolvedThemeKey;
     },
     
     applyCSSVariables() {
@@ -52,4 +53,3 @@ export const ThemeManager = {
 };
 
 ThemeManager.applyCSSVariables();
-AssetLoader.loadThemeAssets('dark');

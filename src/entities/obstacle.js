@@ -46,8 +46,9 @@ function spawnObstacle() {
         { width: 46, height: 40, yOffset: 75, spriteName: 'small-fly' }, // Fly high
     ];
     
-    let allowedTypes = types.slice(0, 4); // Only ground early on
-    if (GameState.score > 300) {
+    const themeHasSprites = ThemeManager.current.hasObstacleSprites === true;
+    let allowedTypes = types.slice(0, 4);
+    if (GameState.score > 300 && themeHasSprites) {
         allowedTypes = types;
     }
     
@@ -94,10 +95,7 @@ export function drawObstacles() {
     const themeName = ThemeManager.activeThemeName;
     
     ctx.fillStyle = theme.obstacleColor;
-    if (theme.hasGlow) {
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = theme.obstacleColor;
-    }
+    ctx.shadowBlur = 0;
     
     for (let obs of obstacles) {
         let sprite = null;
