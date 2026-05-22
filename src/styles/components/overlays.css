@@ -1,0 +1,51 @@
+/* â”€â”€ Overlay panels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.overlay-panel {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    pointer-events: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    transition:
+        background var(--t),
+        border-color var(--t),
+        box-shadow var(--t),
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+.overlay-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -45%);
+}
+
+/* â”€â”€ Start / gameover hint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#start-hint {
+    margin-top: 30px;
+    font-size: 15px;
+    opacity: 0.75;
+    pointer-events: auto;
+    color: var(--text-color);
+    transition: color var(--t);
+}
+
+kbd {
+    display: inline-block;
+    padding: 4px 10px;
+    font-family: monospace;
+    font-size: 15px;
+    background: var(--accent-soft);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    margin: 0 4px;
+    box-shadow: 0 2px 0 var(--panel-border);
+    color: var(--accent-color);
+    transition: background var(--t), color var(--t), border-color var(--t);
+}
+

@@ -90,6 +90,7 @@ export function initDailyQuestsUI() {
     listEl.addEventListener('click', (e) => {
         const btn = e.target.closest('.daily-quests__remove');
         if (!btn) return;
+        e.stopPropagation();
         DailyQuests.removeQuest(btn.dataset.id);
         renderDailyQuests();
     });

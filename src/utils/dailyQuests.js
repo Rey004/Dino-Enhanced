@@ -72,7 +72,7 @@ export const DailyQuests = {
 
     addQuest(text) {
         const trimmed = text.trim();
-        if (!trimmed || this.items.length >= 8) return false;
+        if (!trimmed) return false;
         this.items.push({ id: newId(), text: trimmed, done: false });
         this.save();
         return true;

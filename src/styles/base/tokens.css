@@ -1,0 +1,39 @@
+/* â”€â”€ Design tokens (defaults = dark theme) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+:root {
+    --bg-color:       #0c0808;
+    --text-color:     #e0d4d4;
+    --accent-color:   #8b1a1a;
+    --accent-soft:    rgba(139,26,26,0.14);
+    --ui-glow:        0 0 18px rgba(139,26,26,0.45), 0 0 40px rgba(100,10,10,0.20);
+    --logo-gradient:  linear-gradient(90deg,#8b1a1a,#c0392b,#e0d4d4);
+    --panel-bg:       rgba(15,6,6,0.92);
+    --panel-border:   rgba(139,26,26,0.28);
+    --input-bg:       rgba(10,4,4,0.95);
+    --select-bg:      rgba(18,8,8,0.95);
+    --button-bg:      #8b1a1a;
+    --button-text:    #f0e4e4;
+    --logo-bg-color:   #0f0606;
+    --logo-char-color: #ffffff;
+
+    /* Transition shared across all theme-reactive props */
+    --t: 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* â”€â”€ Dynamic Logo Styling â”€â”€ */
+.logo-svg {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: inline-block;
+    vertical-align: middle;
+}
+.logo-svg .bg-path {
+    fill: var(--logo-bg-color);
+    transition: fill var(--t);
+}
+.logo-svg .dino-path {
+    fill: var(--logo-char-color);
+    transition: fill var(--t);
+}
+

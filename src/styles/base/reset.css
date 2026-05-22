@@ -1,0 +1,45 @@
+/* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* â”€â”€ Body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    opacity: 0;
+    transition:
+        opacity 0.3s ease,
+        background-color var(--t),
+        color var(--t);
+}
+
+[data-tooltip] {
+    position: relative;
+}
+.viewport-tooltip {
+    position: fixed;
+    z-index: 200;
+    max-width: min(220px, calc(100vw - 24px));
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--panel-bg) 82%, var(--accent-color));
+    color: var(--text-color);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 46%, var(--panel-border));
+    box-shadow: 0 8px 22px rgba(0,0,0,0.24), var(--ui-glow);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.viewport-tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+

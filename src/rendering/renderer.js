@@ -1,9 +1,12 @@
 import { GameState } from '../engine/state.js';
 import { ThemeManager } from '../themes/themeManager.js';
 
+const MAX_CANVAS_DPR = 1.5;
+
 export const Renderer = {
     canvas: null,
     ctx: null,
+    dpr: 1,
     
     init() {
         this.canvas = document.getElementById('game-canvas');
@@ -14,12 +17,17 @@ export const Renderer = {
     },
     
     resize() {
-        // Handle High-DPI displays
-        const dpr = window.devicePixelRatio || 1;
+        // Cap the backing-store scale so fullscreen canvas memory stays reasonable.
+        const dpr = Math.min(window.devicePixelRatio || 1, MAX_CANVAS_DPR);
         const rect = this.canvas.getBoundingClientRect();
-        
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
+        const width = Math.max(1, Math.round(rect.width * dpr));
+        const height = Math.max(1, Math.round(rect.height * dpr));
+
+        if (this.canvas.width !== width || this.canvas.height !== height) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+        }
+        this.dpr = dpr;
 
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.scale(dpr, dpr);

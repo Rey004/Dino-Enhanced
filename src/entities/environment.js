@@ -7,6 +7,7 @@ import { AssetLoader } from '../utils/assetLoader.js';
 let backgroundItems = [];
 let groundOffsetX = 0;
 let bgOffsetX = 0;   // slow parallax scroll for background
+const MAX_BACKGROUND_ITEMS = 24;
 
 export function updateEnvironment(dt) {
     if (GameState.currentPhase === 'playing') {
@@ -24,6 +25,9 @@ export function updateEnvironment(dt) {
             height: randomInt(15, 30),
             speed: randomInt(1, 3) * 0.1
         });
+        if (backgroundItems.length > MAX_BACKGROUND_ITEMS) {
+            backgroundItems.shift();
+        }
     }
     
     // Move

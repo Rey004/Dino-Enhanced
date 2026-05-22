@@ -58,10 +58,17 @@
 
             <div id="native-ui-layer" class="native-ui">
                 <div class="top-nav">
-                    <a href="https://mail.google.com" class="nav-link">Gmail</a>
-                    <a href="https://images.google.com" class="nav-link">Images</a>
-                    <a href="https://myaccount.google.com/" class="profile-icon">
-                        <span>R</span>
+                    <a href="https://mail.google.com" class="nav-link nav-link--icon" aria-label="Gmail" data-tooltip="Gmail">
+                        <svg class="gmail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true">
+                            <path fill="#ea4335" d="M6 14.8V38c0 2.2 1.8 4 4 4h6V22.6L6 14.8z"/>
+                            <path fill="#34a853" d="M32 42h6c2.2 0 4-1.8 4-4V14.8l-10 7.8V42z"/>
+                            <path fill="#fbbc04" d="M32 22.6 24 28.8 16 22.6v-9.8l8 6.2 8-6.2v9.8z"/>
+                            <path fill="#4285f4" d="M42 14.8V12c0-3.1-3.5-4.9-6-3l-4 3.8v9.8l10-7.8z"/>
+                            <path fill="#c5221f" d="M6 14.8V12c0-3.1 3.5-4.9 6-3l4 3.8v9.8L6 14.8z"/>
+                        </svg>
+                    </a>
+                    <a href="https://myaccount.google.com/" id="profile-icon" class="profile-icon" aria-label="User profile" data-tooltip="User">
+                        <span id="profile-initial">U</span>
                     </a>
                 </div>
 
@@ -117,7 +124,7 @@
                 </div>
                 <div id="enhancement-toggle-widget" class="enhancement-toggle-container" data-widget="enhancedModeToggle">
                     <label class="ui-switch">
-                        <input type="checkbox" id="main-ui-enhancement-toggle" checked>
+                        <input type="checkbox" id="main-ui-enhancement-toggle">
                         <span class="ui-slider"></span>
                     </label>
                     <span class="ui-switch-label">Enhanced Mode</span>
@@ -175,14 +182,8 @@
                     <label>Music/SFX</label>
                     <input type="checkbox" id="toggle-audio" checked>
                 </div>
-                <div class="setting-row">
-                    <label>Show FPS</label>
-                    <input type="checkbox" id="toggle-fps">
-                </div>
                 <button id="close-settings">Close</button>
             </div>
-
-            <div id="fps-counter" class="hidden">FPS: <span>60</span></div>
         </div>
     </div>
 

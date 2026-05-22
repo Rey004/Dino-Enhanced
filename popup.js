@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSelect  = document.getElementById('popup-theme-select');
     const particlesTog = document.getElementById('popup-particles');
     const audioTog     = document.getElementById('popup-audio');
-    const fpsTog       = document.getElementById('popup-fps');
     const hiScoreEl    = document.getElementById('popup-hi-score');
     const openTabBtn   = document.getElementById('open-tab-btn');
     const widgetListEl = document.getElementById('popup-widget-list');
@@ -106,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Load all saved settings ───────────────────────────────────────────
     chrome.storage.local.get(
-        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'fps', 'hiScore', 'widgetPrefs'],
+        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'hiScore', 'widgetPrefs'],
         async (result) => {
             await WidgetPrefs.load();
             mountWidgetSettings(widgetListEl);
@@ -117,10 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
             themeSelect.value = activeTheme;
 
             // Toggles
-            enhToggle.checked    = result.enhancementsEnabled !== false;
+            enhToggle.checked    = result.enhancementsEnabled === true;
             particlesTog.checked = result.particles !== false;
             audioTog.checked     = result.audio     !== false;
-            fpsTog.checked       = result.fps       === true;
 
             // Hi-score
             if (result.hiScore) {
@@ -167,11 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sendToNewTab({ audio: e.target.checked });
     });
 
-    // ── FPS ──────────────────────────────────────────────────────────────
-    fpsTog.addEventListener('change', (e) => {
-        sendToNewTab({ fps: e.target.checked });
-    });
-
     // ── Open new tab ─────────────────────────────────────────────────────
     openTabBtn.addEventListener('click', () => {
         chrome.tabs.create({ url: 'chrome://newtab/' });
@@ -197,8 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (changes.audio !== undefined) {
             audioTog.checked = changes.audio.newValue !== false;
         }
-        if (changes.fps !== undefined) {
-            fpsTog.checked = !!changes.fps.newValue;
+        if (changes.enhancementsEnabled !== undefined) {
+            enhToggle.checked = changes.enhancementsEnabled.newValue === true;
+            document.body.classList.toggle('disabled', !enhToggle.checked);
         }
         if (changes.widgetPrefs) {
             WidgetPrefs.mergeSaved(changes.widgetPrefs.newValue);

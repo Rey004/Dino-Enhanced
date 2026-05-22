@@ -1,0 +1,91 @@
+/* â”€â”€ Settings panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#settings-panel.overlay-panel,
+#theme-panel.overlay-panel,
+#widget-panel.overlay-panel {
+    min-width: 320px;
+    top: auto; left: auto;
+    bottom: 70px; right: 20px;
+    z-index: 100;
+    transform: none;
+    transform-origin: bottom right;
+    text-align: left;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+}
+#theme-panel.overlay-panel {
+    bottom: 116px;
+    width: 340px;
+}
+#widget-panel.overlay-panel {
+    bottom: 162px;
+    width: 340px;
+}
+#settings-panel.overlay-panel.hidden,
+#theme-panel.overlay-panel.hidden,
+#widget-panel.overlay-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.96);
+}
+
+.theme-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.theme-card {
+    min-width: 0;
+    padding: 0;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
+    color: var(--text-color);
+    cursor: pointer;
+    text-align: left;
+    box-shadow: none;
+    transition: border-color var(--t), background var(--t), transform 0.16s, box-shadow var(--t);
+}
+
+.theme-card:hover {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-soft) 54%, var(--panel-bg));
+    transform: translateY(-1px);
+}
+
+.theme-card.is-active {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 30%, transparent), var(--ui-glow);
+}
+
+.theme-card__thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.theme-card__name {
+    display: block;
+    padding: 9px 10px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-section {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--panel-border);
+}
+.settings-section__title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-color);
+}

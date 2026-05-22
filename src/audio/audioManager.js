@@ -1,8 +1,16 @@
 // Simple Web Audio API synthesizer for 0-dependency offline sounds
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null;
+
+function getAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+}
 
 export function playSound(type) {
     if (!document.getElementById('toggle-audio').checked) return;
+    const audioCtx = getAudioContext();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     
     const osc = audioCtx.createOscillator();

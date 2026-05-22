@@ -1,0 +1,200 @@
+/* â”€â”€ Bottom-left controls (stats + enhanced toggle) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.bottom-left-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+}
+.bottom-left-bar > * {
+    pointer-events: auto;
+}
+
+.bottom-left-bar .customize-button,
+.bottom-left-bar .enhancement-toggle-container {
+    position: static;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    flex-shrink: 0;
+}
+
+.statistics-widget {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Override .overlay-panel centering â€” anchor above bottom-left bar */
+#game-stats-panel.game-stats-panel.overlay-panel {
+    position: fixed;
+    top: auto;
+    right: auto;
+    left: 20px;
+    bottom: 72px;
+    min-width: 280px;
+    max-width: min(320px, calc(100vw - 40px));
+    max-height: min(420px, calc(100vh - 100px));
+    overflow-y: auto;
+    z-index: 55;
+    transform: none;
+    transform-origin: bottom left;
+    text-align: left;
+    padding: 24px 28px;
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+}
+#game-stats-panel.game-stats-panel.overlay-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.96) !important;
+}
+
+.game-stats__title {
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+    transition: color var(--t);
+}
+.game-stats__grid {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+}
+.game-stats__item {
+    margin: 0;
+}
+.game-stats__label {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-color);
+    opacity: 0.55;
+    transition: color var(--t);
+}
+.game-stats__value {
+    margin: 2px 0 0;
+    font-size: 17px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-color);
+    transition: color var(--t);
+}
+.game-stats__value--time {
+    font-size: 15px;
+    letter-spacing: 0.02em;
+}
+
+/* â”€â”€ Enhancement toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.enhancement-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel-bg);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    transition: background var(--t), border-color var(--t), box-shadow var(--t);
+}
+
+.ui-switch {
+    position: relative;
+    display: inline-block;
+    width: 32px; height: 18px;
+}
+.ui-switch input { opacity: 0; width: 0; height: 0; }
+
+.ui-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.18);
+    transition: background 0.35s;
+    border-radius: 20px;
+    border: 1px solid var(--panel-border);
+}
+.ui-slider::before {
+    position: absolute;
+    content: '';
+    height: 12px; width: 12px;
+    left: 2px; bottom: 2px;
+    background-color: var(--text-color);
+    transition: transform 0.35s, background 0.35s;
+    border-radius: 50%;
+}
+.ui-switch input:checked + .ui-slider { background-color: var(--accent-color); }
+.ui-switch input:checked + .ui-slider::before {
+    transform: translateX(14px);
+    background-color: var(--button-text);
+}
+
+.ui-switch-label {
+    font-size: 13px;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color var(--t);
+}
+
+/* â”€â”€ Customize / settings button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.customize-button {
+    position: absolute;
+    bottom: 20px; right: 20px;
+    width: 36px; height: 36px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10;
+    transition: background var(--t), border-color var(--t), transform 0.2s, box-shadow var(--t);
+}
+.customize-button svg {
+    width: 18px; height: 18px;
+    fill: var(--text-color);
+    stroke: var(--text-color);
+    transition: fill var(--t), stroke var(--t), transform 0.22s ease;
+}
+.customize-button:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+    box-shadow: var(--ui-glow);
+    transform: scale(1.1);
+}
+
+.floating-tool-button--widgets {
+    bottom: 112px;
+}
+
+.floating-tool-button--theme {
+    bottom: 66px;
+}
+
+.floating-tool-button--settings {
+    bottom: 20px;
+}
+
+.floating-tool-button--settings svg {
+    fill: none;
+}
+
+.floating-tool-button--widgets svg {
+    fill: none;
+}
+
+.floating-tool-button--settings[aria-expanded="true"] svg {
+    transform: rotate(45deg);
+}
+

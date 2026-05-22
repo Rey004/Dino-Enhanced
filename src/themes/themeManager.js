@@ -13,8 +13,13 @@ export const ThemeManager = {
         this.applyCSSVariables();
 
         if (themes[resolvedThemeKey].hasThemeAssets) {
+            AssetLoader.unloadOtherThemes(resolvedThemeKey);
             await AssetLoader.loadThemeAssets(resolvedThemeKey);
         }
+
+        window.dispatchEvent(new CustomEvent('themeassetschange', {
+            detail: { theme: resolvedThemeKey },
+        }));
 
         return resolvedThemeKey;
     },

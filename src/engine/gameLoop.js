@@ -26,6 +26,11 @@ export const GameLoop = {
     },
     
     loop(currentTime) {
+        if (document.hidden) {
+            animationId = null;
+            return;
+        }
+
         const deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         
@@ -34,10 +39,12 @@ export const GameLoop = {
         
         this.update(dt);
         this.draw();
-        
-        UIManager.updateFPS(dt);
-        
-        animationId = requestAnimationFrame(this.loop.bind(this));
+
+        if (GameState.currentPhase === 'playing') {
+            animationId = requestAnimationFrame(this.loop.bind(this));
+        } else {
+            animationId = null;
+        }
     },
     
     update(dt) {

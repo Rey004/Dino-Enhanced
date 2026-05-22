@@ -5,17 +5,22 @@ import { WidgetManager } from './widgetManager.js';
 export const UIManager = {
     scoreLabel: null,
     hiScoreLabel: null,
-    fpsLabel: null,
     menuPanel: null,
     gameOverPanel: null,
     settingsPanel: null,
+    profileIcon: null,
+    profileInitial: null,
+    tooltipEl: null,
+    activeTooltipTarget: null,
+    tooltipsReady: false,
     
     init() {
         this.scoreLabel = document.getElementById('current-score');
         this.hiScoreLabel = document.getElementById('hi-score');
-        this.fpsLabel = document.querySelector('#fps-counter span');
         this.menuPanel = document.getElementById('native-ui-layer');
         this.settingsPanel = document.getElementById('settings-panel');
+        this.profileIcon = document.getElementById('profile-icon');
+        this.profileInitial = document.getElementById('profile-initial');
         this.themePanel = document.getElementById('theme-panel');
         this.widgetPanel = document.getElementById('widget-panel');
         this.scoreContainer = document.getElementById('score-container');
@@ -43,6 +48,7 @@ export const UIManager = {
         const settingsButton = document.getElementById('settings-button');
         const themeButton = document.getElementById('theme-button');
         const widgetButton = document.getElementById('widget-button');
+        this.initViewportTooltips();
 
         settingsButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -142,9 +148,7 @@ export const UIManager = {
         const mainToggle = document.getElementById('main-ui-enhancement-toggle');
         if (mainToggle) {
             chrome.storage?.local.get(['enhancementsEnabled'], (result) => {
-                if (result.enhancementsEnabled !== undefined) {
-                    mainToggle.checked = result.enhancementsEnabled;
-                }
+                mainToggle.checked = result.enhancementsEnabled === true;
             });
             
             mainToggle.addEventListener('change', (e) => {
@@ -205,14 +209,105 @@ export const UIManager = {
             chrome.storage?.local.set({ audio: e.target.checked });
         });
         
-        document.getElementById('toggle-fps').addEventListener('change', (e) => {
-            const fpsCounter = document.getElementById('fps-counter');
-            if (e.target.checked) {
-                fpsCounter.classList.remove('hidden');
+    },
+
+    initViewportTooltips() {
+        if (this.tooltipsReady) return;
+        this.tooltipsReady = true;
+
+        const margin = 12;
+        const gap = 8;
+        const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+        const ensureTooltip = () => {
+            if (this.tooltipEl) return this.tooltipEl;
+            this.tooltipEl = document.createElement('div');
+            this.tooltipEl.className = 'viewport-tooltip';
+            this.tooltipEl.setAttribute('role', 'tooltip');
+            document.body.appendChild(this.tooltipEl);
+            return this.tooltipEl;
+        };
+
+        const positionTooltip = (target) => {
+            const tooltip = ensureTooltip();
+            const targetRect = target.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const position = target.dataset.tooltipPosition || 'top';
+            let left;
+            let top;
+
+            if (position === 'left') {
+                left = targetRect.left - tooltipRect.width - gap;
+                top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+            } else if (position === 'right') {
+                left = targetRect.right + gap;
+                top = targetRect.top + (targetRect.height - tooltipRect.height) / 2;
+            } else if (position === 'top-start') {
+                left = targetRect.left;
+                top = targetRect.top - tooltipRect.height - gap;
             } else {
-                fpsCounter.classList.add('hidden');
+                left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
+                top = targetRect.top - tooltipRect.height - gap;
             }
+
+            if (top < margin) {
+                top = targetRect.bottom + gap;
+            }
+            if (top + tooltipRect.height > viewportHeight - margin) {
+                top = targetRect.top - tooltipRect.height - gap;
+            }
+
+            const maxLeft = Math.max(margin, viewportWidth - tooltipRect.width - margin);
+            const maxTop = Math.max(margin, viewportHeight - tooltipRect.height - margin);
+            tooltip.style.left = `${clamp(left, margin, maxLeft)}px`;
+            tooltip.style.top = `${clamp(top, margin, maxTop)}px`;
+        };
+
+        const showTooltip = (target) => {
+            const text = target?.dataset.tooltip;
+            if (!text) return;
+            const tooltip = ensureTooltip();
+            this.activeTooltipTarget = target;
+            tooltip.textContent = text;
+            positionTooltip(target);
+            tooltip.classList.add('is-visible');
+        };
+
+        const hideTooltip = () => {
+            this.activeTooltipTarget = null;
+            this.tooltipEl?.classList.remove('is-visible');
+        };
+
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (!target || target.contains(e.relatedTarget)) return;
+            showTooltip(target);
         });
+
+        document.addEventListener('mouseout', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (!target || target.contains(e.relatedTarget)) return;
+            hideTooltip();
+        });
+
+        document.addEventListener('focusin', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) showTooltip(target);
+        });
+
+        document.addEventListener('focusout', (e) => {
+            if (e.target.closest('[data-tooltip]')) hideTooltip();
+        });
+
+        document.addEventListener('click', hideTooltip);
+        window.addEventListener('resize', () => {
+            if (this.activeTooltipTarget) positionTooltip(this.activeTooltipTarget);
+        });
+        window.addEventListener('scroll', () => {
+            if (this.activeTooltipTarget) positionTooltip(this.activeTooltipTarget);
+        }, true);
     },
     
     setActiveSwatch(themeKey) {
@@ -251,10 +346,18 @@ export const UIManager = {
         set('stat-total-distance', formatScore(stats.totalDistance));
         set('stat-play-time', formatPlayTime(stats.totalPlayTimeMs || 0));
     },
-    
-    updateFPS(dt) {
-        if (dt > 0 && this.fpsLabel) {
-            this.fpsLabel.textContent = String(Math.round(1000 / dt));
+
+    setProfileName(profileName = 'User') {
+        const cleanName = String(profileName).trim() || 'User';
+        const initial = cleanName.charAt(0).toUpperCase();
+
+        if (this.profileInitial) {
+            this.profileInitial.textContent = initial;
+        }
+        if (this.profileIcon) {
+            this.profileIcon.dataset.tooltip = cleanName;
+            this.profileIcon.setAttribute('aria-label', `${cleanName} profile`);
+            this.profileIcon.setAttribute('title', cleanName);
         }
     },
     

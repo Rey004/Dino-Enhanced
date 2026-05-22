@@ -11,6 +11,7 @@ import { initDailyQuestsUI } from './ui/dailyQuestsUI.js';
 import { WidgetManager } from './ui/widgetManager.js';
 
 const DEFAULT_THEME = 'dark';
+const DEFAULT_PROFILE_NAME = 'User';
 
 function storageGet(keys) {
     return new Promise((resolve) => {
@@ -23,7 +24,7 @@ function storageGet(keys) {
 }
 
 async function applySavedSettings(result) {
-    if (result.enhancementsEnabled === false) {
+    if (result.enhancementsEnabled !== true) {
         if (chrome.tabs?.getCurrent) {
             chrome.tabs.getCurrent((tab) => {
                 if (tab) {
@@ -37,6 +38,9 @@ async function applySavedSettings(result) {
         }
         return false;
     }
+
+    const profileName = await resolveProfileName(result.profileName);
+    UIManager.setProfileName(profileName);
 
     document.body.style.opacity = '1';
 
@@ -63,8 +67,49 @@ async function applySavedSettings(result) {
     return true;
 }
 
+function saveProfileName(profileName) {
+    return new Promise((resolve) => {
+        if (!chrome.storage?.local) {
+            resolve();
+            return;
+        }
+        chrome.storage.local.set({ profileName }, resolve);
+    });
+}
+
+async function resolveProfileName(savedName) {
+    const cleanSavedName = sanitizeProfileName(savedName);
+    if (cleanSavedName) return cleanSavedName;
+
+    const enteredName = sanitizeProfileName(window.prompt('What name should DinoDash use for your profile?'));
+    const profileName = enteredName || DEFAULT_PROFILE_NAME;
+    await saveProfileName(profileName);
+    return profileName;
+}
+
+function sanitizeProfileName(name) {
+    return typeof name === 'string'
+        ? name.trim().replace(/\s+/g, ' ').slice(0, 40)
+        : '';
+}
+
 async function init() {
     try {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                GameLoop.stop();
+            } else if (GameState.currentPhase === 'playing') {
+                GameLoop.start();
+            } else {
+                GameLoop.start();
+            }
+        });
+        window.addEventListener('themeassetschange', () => {
+            if (!document.hidden) {
+                GameLoop.start();
+            }
+        });
+
         chrome.storage?.onChanged.addListener((changes, namespace) => {
             if (namespace !== 'local') return;
 
@@ -81,21 +126,16 @@ async function init() {
                 });
             }
 
-            if (changes.fps) {
-                const fpsCounter = document.getElementById('fps-counter');
-                if (fpsCounter) {
-                    fpsCounter.classList.toggle('hidden', !changes.fps.newValue);
-                    const fpsToggle = document.getElementById('toggle-fps');
-                    if (fpsToggle) fpsToggle.checked = changes.fps.newValue;
-                }
-            }
-
             if (changes.gameStats || changes.hiScore) {
                 GameStats.load().then(() => {
                     GameState.hiScore = GameStats.data.hiScore;
                     UIManager.updateHiScore(GameState.hiScore);
                     UIManager.updateGameStats(GameStats.data);
                 });
+            }
+
+            if (changes.profileName) {
+                UIManager.setProfileName(changes.profileName.newValue || DEFAULT_PROFILE_NAME);
             }
         });
 
@@ -112,6 +152,7 @@ async function init() {
             'theme',
             'particles',
             'audio',
+            'profileName',
         ]);
 
         const ready = await applySavedSettings(result);

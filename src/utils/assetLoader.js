@@ -16,6 +16,19 @@ function themeAssetUrl(themeName, fileName) {
 export const AssetLoader = {
     images: {},
 
+    unloadOtherThemes(activeThemeName) {
+        Object.keys(this.images).forEach((key) => {
+            if (key.startsWith(`${activeThemeName}_`)) return;
+            const img = this.images[key];
+            if (img) {
+                img.onload = null;
+                img.onerror = null;
+                img.removeAttribute?.('src');
+            }
+            delete this.images[key];
+        });
+    },
+
     async loadThemeAssets(themeName) {
         if (!themeHasAssets(themeName)) return;
 
@@ -35,6 +48,7 @@ export const AssetLoader = {
                 }
 
                 const img = new Image();
+                img.decoding = 'async';
                 img.src = themeAssetUrl(themeName, `${asset}.webp`);
 
                 img.onload = () => {
@@ -44,6 +58,7 @@ export const AssetLoader = {
 
                 img.onerror = () => {
                     const fallbackImg = new Image();
+                    fallbackImg.decoding = 'async';
                     fallbackImg.src = themeAssetUrl(themeName, `${asset}.png`);
                     fallbackImg.onload = () => {
                         this.images[key] = fallbackImg;

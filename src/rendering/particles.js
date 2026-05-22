@@ -3,6 +3,13 @@ import { GameState } from '../engine/state.js';
 import { ThemeManager } from '../themes/themeManager.js';
 
 let particles = [];
+const MAX_PARTICLES = 120;
+
+function trimParticles() {
+    if (particles.length > MAX_PARTICLES) {
+        particles.splice(0, particles.length - MAX_PARTICLES);
+    }
+}
 
 export function emitDust(x, y, amount = 5) {
     if (!document.getElementById('toggle-particles').checked) return;
@@ -20,6 +27,7 @@ export function emitDust(x, y, amount = 5) {
             size: Math.random() * 4 + 2
         });
     }
+    trimParticles();
 }
 
 export function emitExplosion(x, y) {
@@ -39,6 +47,7 @@ export function emitExplosion(x, y) {
             size: Math.random() * 6 + 2
         });
     }
+    trimParticles();
 }
 
 export function updateParticles(dt) {
