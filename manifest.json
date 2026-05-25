@@ -14,7 +14,8 @@
   },
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "history"
   ],
   "action": {
     "default_icon": {

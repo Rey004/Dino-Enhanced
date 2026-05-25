@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSelect  = document.getElementById('popup-theme-select');
     const particlesTog = document.getElementById('popup-particles');
     const audioTog     = document.getElementById('popup-audio');
+    const messagesTog  = document.getElementById('popup-messages');
     const hiScoreEl    = document.getElementById('popup-hi-score');
     const openTabBtn   = document.getElementById('open-tab-btn');
     const widgetListEl = document.getElementById('popup-widget-list');
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Load all saved settings ───────────────────────────────────────────
     chrome.storage.local.get(
-        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'hiScore', 'widgetPrefs'],
+        ['enhancementsEnabled', 'theme', 'particles', 'audio', 'messagesEnabled', 'hiScore', 'widgetPrefs'],
         async (result) => {
             await WidgetPrefs.load();
             mountWidgetSettings(widgetListEl);
@@ -119,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             enhToggle.checked    = result.enhancementsEnabled === true;
             particlesTog.checked = result.particles !== false;
             audioTog.checked     = result.audio     !== false;
+            messagesTog.checked  = result.messagesEnabled  !== false;
 
             // Hi-score
             if (result.hiScore) {
@@ -165,6 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sendToNewTab({ audio: e.target.checked });
     });
 
+    // ── Messages ─────────────────────────────────────────────────────────
+    messagesTog.addEventListener('change', (e) => {
+        sendToNewTab({ messagesEnabled: e.target.checked });
+    });
+
     // ── Open new tab ─────────────────────────────────────────────────────
     openTabBtn.addEventListener('click', () => {
         chrome.tabs.create({ url: 'chrome://newtab/' });
@@ -189,6 +196,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (changes.audio !== undefined) {
             audioTog.checked = changes.audio.newValue !== false;
+        }
+        if (changes.messagesEnabled !== undefined) {
+            messagesTog.checked = changes.messagesEnabled.newValue !== false;
         }
         if (changes.enhancementsEnabled !== undefined) {
             enhToggle.checked = changes.enhancementsEnabled.newValue === true;

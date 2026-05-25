@@ -226,8 +226,82 @@
                     <label>Music/SFX</label>
                     <input type="checkbox" id="toggle-audio" checked>
                 </div>
+                <div class="setting-row">
+                    <label>System Messages</label>
+                    <input type="checkbox" id="toggle-messages" checked>
+                </div>
                 <button id="close-settings">Close</button>
             </div>
+
+            <!-- History Sidebar Tab Handle -->
+            <div id="history-sidebar-tab" class="history-sidebar-tab" role="button" tabindex="0" aria-label="Toggle history panel" data-tooltip="Browsing History" data-tooltip-position="left" data-widget="historyTab">
+                <svg class="history-sidebar-tab__chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </div>
+
+            <!-- History Sidebar Panel -->
+            <aside id="history-panel" class="history-sidebar hidden" aria-label="History" data-widget="historyTab">
+                <header class="history-sidebar__header">
+                    <h2 class="history-sidebar__title">Browsing Memory</h2>
+                </header>
+
+                <!-- Tab Segmented Controls -->
+                <div class="history-tabs-container">
+                    <div class="history-tabs" data-active="history">
+                        <div class="history-tabs-slider"></div>
+                        <button type="button" class="history-tab-btn is-active" data-tab="history"
+                                data-tooltip="Recent pages, pinned items, and quick search" data-tooltip-position="top">History</button>
+                        <button type="button" class="history-tab-btn" data-tab="analytics"
+                                data-tooltip="Browsing breakdown with smart suggestions" data-tooltip-position="top">Analytics</button>
+                    </div>
+                </div>
+
+                <!-- Filter controls -->
+                <div id="history-filters" class="history-filters">
+                    <div class="history-sidebar__search-container">
+                        <span class="history-sidebar__search-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="7"/>
+                                <line x1="20" y1="20" x2="16.65" y2="16.65"/>
+                            </svg>
+                        </span>
+                        <input type="text" id="history-search-input" placeholder="Search title or URL…" autocomplete="off" spellcheck="false"
+                               data-tooltip="Filter by title or URL" data-tooltip-position="left">
+                        <button type="button" id="history-search-clear" class="history-search-clear hidden" aria-label="Clear search"
+                                data-tooltip="Clear search" data-tooltip-position="left">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="history-filter-row history-filter-row--type">
+                        <span class="filter-label">Type</span>
+                        <div id="history-category-pills" class="history-category-pills" role="group" aria-label="Category filter"></div>
+                    </div>
+                </div>
+
+                <!-- Main smart history list view -->
+                <div id="history-list-container" class="history-sidebar__list" role="list"></div>
+
+                <!-- Browsing Insights view -->
+                <div id="history-insights-container" class="history-sidebar__insights hidden">
+                    <div class="insights-section">
+                        <h3 class="insights-title">Category Distribution</h3>
+                        <div id="insights-categories-list" class="insights-categories-list"></div>
+                    </div>
+                    <div class="insights-section">
+                        <h3 class="insights-title">Smart Insights</h3>
+                        <div id="insights-summary" class="insights-summary"></div>
+                    </div>
+                    <div class="insights-section">
+                        <h3 class="insights-title">Suggestions</h3>
+                        <div id="insights-suggestions" class="insights-suggestions"></div>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 

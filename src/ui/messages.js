@@ -150,6 +150,21 @@ export const MESSAGE_BANKS = {
         'Self-check: Focus level: High. Caffeine level: [Loading].',
         'Tip: Checklist progress increases Daily Run level!',
         'System monitor: 0 anomalies detected. You\'re doing great, {user}.'
+    ],
+    historyOpened: [
+        'Accessing browsing history database...',
+        'History log registry mounted. Synchronized.',
+        'Analyzing search and browsing patterns...'
+    ],
+    historySearched: [
+        'Filtering history logs for: "{query}"',
+        'Search query "{query}" executed. Listing matches...',
+        'Scanning log index. Found results matching "{query}".'
+    ],
+    historyDeleted: [
+        'Registry entry deleted successfully.',
+        'URL log purged from local database.',
+        'Record erased from history matrix.'
     ]
 };
 

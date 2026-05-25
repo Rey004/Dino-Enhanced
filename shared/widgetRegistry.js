@@ -36,6 +36,15 @@ export const WIDGET_REGISTRY = [
         closeElementIds: ['favourite-links-panel'],
         hideDuringPlay: true,
     },
+    {
+        id: 'historyTab',
+        label: 'History Sidebar',
+        description: 'Sliding right-side panel displaying browsing history with search and cleanup tools',
+        defaultEnabled: true,
+        elementIds: ['history-sidebar-tab'],
+        closeElementIds: ['history-panel'],
+        hideDuringPlay: true,
+    },
 ];
 
 export function getWidgetDef(id) {

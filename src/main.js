@@ -11,6 +11,7 @@ import { initDailyQuestsUI } from './ui/dailyQuestsUI.js';
 import { WidgetManager } from './ui/widgetManager.js';
 import { initFavouriteLinksUI } from './ui/favouriteLinksUI.js';
 import { InteractiveMessages } from './ui/interactiveMessages.js';
+import { initHistoryUI } from './ui/historyUI.js';
 
 const DEFAULT_THEME = 'dark';
 const DEFAULT_PROFILE_NAME = 'User';
@@ -64,6 +65,10 @@ async function applySavedSettings(result) {
     }
     if (result.audio !== undefined && audioTog) {
         audioTog.checked = result.audio;
+    }
+    const messagesTog = document.getElementById('toggle-messages');
+    if (result.messagesEnabled !== undefined && messagesTog) {
+        messagesTog.checked = result.messagesEnabled;
     }
 
     return true;
@@ -154,6 +159,7 @@ async function init() {
             'theme',
             'particles',
             'audio',
+            'messagesEnabled',
             'profileName',
         ]);
 
@@ -163,6 +169,7 @@ async function init() {
         await initFavouriteLinksUI();
         await DailyQuests.load();
         initDailyQuestsUI();
+        initHistoryUI();
         InteractiveMessages.init();
 
         GameLoop.start();

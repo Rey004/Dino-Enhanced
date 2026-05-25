@@ -64,6 +64,7 @@ export const UIManager = {
             widgetButton?.setAttribute('aria-expanded', 'false');
             this.favouriteLinksPanel?.classList.add('hidden');
             this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
+            this.closeHistoryPanel();
             this.settingsPanel.classList.toggle('hidden');
             settingsButton.setAttribute('aria-expanded', String(!this.settingsPanel.classList.contains('hidden')));
         });
@@ -80,6 +81,7 @@ export const UIManager = {
             widgetButton?.setAttribute('aria-expanded', 'false');
             this.favouriteLinksPanel?.classList.add('hidden');
             this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
+            this.closeHistoryPanel();
             this.themePanel.classList.toggle('hidden');
             themeButton.setAttribute('aria-expanded', String(!this.themePanel.classList.contains('hidden')));
         });
@@ -96,6 +98,7 @@ export const UIManager = {
             themeButton.setAttribute('aria-expanded', 'false');
             this.favouriteLinksPanel?.classList.add('hidden');
             this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
+            this.closeHistoryPanel();
             this.widgetPanel.classList.toggle('hidden');
             widgetButton.setAttribute('aria-expanded', String(!this.widgetPanel.classList.contains('hidden')));
         });
@@ -114,6 +117,7 @@ export const UIManager = {
                 settingsButton.setAttribute('aria-expanded', 'false');
                 themeButton?.setAttribute('aria-expanded', 'false');
                 widgetButton?.setAttribute('aria-expanded', 'false');
+                this.closeHistoryPanel();
                 const opening = this.favouriteLinksPanel.classList.contains('hidden');
                 this.favouriteLinksPanel.classList.toggle('hidden');
                 this.favouriteLinksButton.setAttribute('aria-expanded', String(opening));
@@ -135,6 +139,7 @@ export const UIManager = {
                 widgetButton?.setAttribute('aria-expanded', 'false');
                 this.favouriteLinksPanel?.classList.add('hidden');
                 this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
+                this.closeHistoryPanel();
                 const opening = this.statsPanel.classList.contains('hidden');
                 this.statsPanel.classList.toggle('hidden');
                 this.statsButton.setAttribute('aria-expanded', String(opening));
@@ -187,6 +192,15 @@ export const UIManager = {
                 if (!isClickInside) {
                     this.favouriteLinksPanel.classList.add('hidden');
                     this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
+                }
+            }
+            const historyPanel = document.getElementById('history-panel');
+            const historyTab = document.getElementById('history-sidebar-tab');
+            if (historyPanel && !historyPanel.classList.contains('hidden')) {
+                const path = e.composedPath();
+                const isClickInside = path.includes(historyPanel) || path.includes(historyTab);
+                if (!isClickInside) {
+                    this.closeHistoryPanel();
                 }
             }
         });
@@ -253,6 +267,10 @@ export const UIManager = {
         
         document.getElementById('toggle-audio').addEventListener('change', (e) => {
             chrome.storage?.local.set({ audio: e.target.checked });
+        });
+
+        document.getElementById('toggle-messages').addEventListener('change', (e) => {
+            chrome.storage?.local.set({ messagesEnabled: e.target.checked });
         });
         
     },
@@ -425,10 +443,26 @@ export const UIManager = {
             this.favouriteLinksPanel.classList.add('hidden');
             this.favouriteLinksButton?.setAttribute('aria-expanded', 'false');
         }
+        this.closeHistoryPanel();
         this.canvas.classList.remove('blurred');
         this.scoreContainer.classList.remove('hidden');
         if (this.bottomLeftBar) this.bottomLeftBar.style.display = 'none';
         WidgetManager.setGameActive(true);
+    },
+
+    closeHistoryPanel() {
+        const panel = document.getElementById('history-panel');
+        const tab = document.getElementById('history-sidebar-tab');
+        if (panel && tab) {
+            panel.classList.remove('is-open');
+            tab.classList.remove('is-open');
+            tab.setAttribute('aria-expanded', 'false');
+            setTimeout(() => {
+                if (!panel.classList.contains('is-open')) {
+                    panel.classList.add('hidden');
+                }
+            }, 400);
+        }
     },
 
     showGameOver() {

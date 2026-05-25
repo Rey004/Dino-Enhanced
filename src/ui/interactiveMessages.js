@@ -19,18 +19,37 @@ async function getProfileName() {
 }
 
 export const InteractiveMessages = {
+    messagesEnabled: true,
+
     init() {
         this.setupEventListeners();
         
-        // Welcome greeting on tab startup after a brief delay
-        setTimeout(async () => {
-            const userName = await getProfileName();
-            const greeting = getRandomMessage('greetings', {}, userName);
-            this.show(greeting, null, 'upper-center', 'general', 3500);
-        }, 800);
+        // Load initial messages preference
+        if (chrome.storage?.local) {
+            chrome.storage.local.get(['messagesEnabled'], (result) => {
+                this.messagesEnabled = result.messagesEnabled !== false;
+                if (this.messagesEnabled) {
+                    // Welcome greeting on tab startup after a brief delay
+                    setTimeout(async () => {
+                        const userName = await getProfileName();
+                        const greeting = getRandomMessage('greetings', {}, userName);
+                        this.show(greeting, null, 'upper-center', 'general', 3500);
+                    }, 800);
+                }
+            });
+        } else {
+            this.messagesEnabled = true;
+            // Welcome greeting on tab startup after a brief delay
+            setTimeout(async () => {
+                const userName = await getProfileName();
+                const greeting = getRandomMessage('greetings', {}, userName);
+                this.show(greeting, null, 'upper-center', 'general', 3500);
+            }, 800);
+        }
 
         // Ambient system messages timer
         setInterval(async () => {
+            if (!this.messagesEnabled) return;
             // Only trigger ambient messages if the tab is visible and the game is NOT currently running
             if (document.hidden) return;
             
@@ -70,6 +89,8 @@ export const InteractiveMessages = {
     },
 
     show(text, targetEl, preferredPosition = 'top', anchorId = 'general', duration = 3000) {
+        if (!this.messagesEnabled) return;
+
         // Clean up previous message for this widget category immediately
         const existing = activeMessages[anchorId];
         if (existing) {
@@ -301,6 +322,38 @@ export const InteractiveMessages = {
             const themeName = prettyThemeNames[e.detail.theme] || e.detail.theme;
             const text = getRandomMessage('themeChanged', { theme: themeName }, userName);
             this.show(text, document.getElementById('theme-panel'), 'left', 'general', 3000);
+        });
+
+        // History Panel events
+        window.addEventListener('dino-history-opened', async () => {
+            const userName = await getProfileName();
+            const text = getRandomMessage('historyOpened', {}, userName);
+            setTimeout(() => {
+                const tab = document.getElementById('history-sidebar-tab');
+                const sidebar = document.getElementById('history-panel');
+                if (sidebar && sidebar.classList.contains('is-open')) {
+                    this.show(text, tab, 'left', 'history', 2500);
+                }
+            }, 400);
+        });
+
+        window.addEventListener('dino-history-searched', async (e) => {
+            const userName = await getProfileName();
+            const text = getRandomMessage('historySearched', { query: e.detail.query }, userName);
+            this.show(text, document.getElementById('history-sidebar-tab'), 'left', 'history', 3000);
+        });
+
+        window.addEventListener('dino-history-deleted', async () => {
+            const userName = await getProfileName();
+            const text = getRandomMessage('historyDeleted', {}, userName);
+            this.show(text, document.getElementById('history-sidebar-tab'), 'left', 'history', 2500);
+        });
+
+        // Storage change event to sync setting option live
+        chrome.storage?.onChanged.addListener((changes, namespace) => {
+            if (namespace === 'local' && changes.messagesEnabled) {
+                this.messagesEnabled = changes.messagesEnabled.newValue !== false;
+            }
         });
     }
 };

@@ -65,8 +65,12 @@
 
 .favourite-links__title {
     margin: 0;
-    font-size: 20px;
-    font-weight: 800;
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    font-weight: 500;
     color: var(--text-color);
 }
 
