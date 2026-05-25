@@ -83,7 +83,19 @@ export function initDailyQuestsUI() {
     listEl.addEventListener('change', (e) => {
         const cb = e.target.closest('.daily-quests__check');
         if (!cb) return;
-        DailyQuests.toggleQuest(cb.dataset.id);
+        const qId = cb.dataset.id;
+        const quest = DailyQuests.items.find(q => q.id === qId);
+        DailyQuests.toggleQuest(qId);
+        const nowQuest = DailyQuests.items.find(q => q.id === qId);
+        if (nowQuest) {
+            window.dispatchEvent(new CustomEvent('dino-quest-toggled', {
+                detail: { text: nowQuest.text, done: nowQuest.done }
+            }));
+            const { done, total } = DailyQuests.getProgress();
+            if (total > 0 && done === total) {
+                window.dispatchEvent(new CustomEvent('dino-quests-completed'));
+            }
+        }
         renderDailyQuests();
     });
 
@@ -91,13 +103,24 @@ export function initDailyQuestsUI() {
         const btn = e.target.closest('.daily-quests__remove');
         if (!btn) return;
         e.stopPropagation();
-        DailyQuests.removeQuest(btn.dataset.id);
+        const qId = btn.dataset.id;
+        const quest = DailyQuests.items.find(q => q.id === qId);
+        if (quest) {
+            window.dispatchEvent(new CustomEvent('dino-quest-removed', {
+                detail: { text: quest.text }
+            }));
+        }
+        DailyQuests.removeQuest(qId);
         renderDailyQuests();
     });
 
     addForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (DailyQuests.addQuest(addInput?.value || '')) {
+        const val = addInput?.value || '';
+        if (DailyQuests.addQuest(val)) {
+            window.dispatchEvent(new CustomEvent('dino-quest-added', {
+                detail: { text: val }
+            }));
             if (addInput) addInput.value = '';
             renderDailyQuests();
         }

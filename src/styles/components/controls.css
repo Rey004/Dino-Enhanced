@@ -83,14 +83,16 @@
 }
 .game-stats__value {
     margin: 2px 0 0;
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     color: var(--accent-color);
     transition: color var(--t);
+    word-break: break-all;
+    overflow-wrap: anywhere;
 }
 .game-stats__value--time {
-    font-size: 15px;
+    font-size: 12px;
     letter-spacing: 0.02em;
 }
 

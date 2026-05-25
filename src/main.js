@@ -10,6 +10,7 @@ import { DailyQuests } from './utils/dailyQuests.js';
 import { initDailyQuestsUI } from './ui/dailyQuestsUI.js';
 import { WidgetManager } from './ui/widgetManager.js';
 import { initFavouriteLinksUI } from './ui/favouriteLinksUI.js';
+import { InteractiveMessages } from './ui/interactiveMessages.js';
 
 const DEFAULT_THEME = 'dark';
 const DEFAULT_PROFILE_NAME = 'User';
@@ -162,6 +163,7 @@ async function init() {
         await initFavouriteLinksUI();
         await DailyQuests.load();
         initDailyQuestsUI();
+        InteractiveMessages.init();
 
         GameLoop.start();
     } catch (err) {

@@ -117,6 +117,9 @@ export const UIManager = {
                 const opening = this.favouriteLinksPanel.classList.contains('hidden');
                 this.favouriteLinksPanel.classList.toggle('hidden');
                 this.favouriteLinksButton.setAttribute('aria-expanded', String(opening));
+                if (opening) {
+                    window.dispatchEvent(new CustomEvent('dino-links-opened'));
+                }
             });
         }
 

@@ -188,9 +188,13 @@ function renderFolder(folder) {
     deleteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         showConfirm(`Delete folder "<strong>${folder.name}</strong>" and all its links?`, () => {
+            const folderName = folder.name;
             data.folders = data.folders.filter((f) => f.id !== folder.id);
             save();
             render();
+            window.dispatchEvent(new CustomEvent('dino-folder-deleted', {
+                detail: { folderName }
+            }));
         });
     });
     actions.append(deleteBtn);
@@ -262,9 +266,13 @@ function renderLink(link) {
         showConfirm(`Remove "<strong>${link.title || getHost(link.url)}</strong>"?`, () => {
             const found = findLink(link.id);
             if (!found) return;
+            const title = found.link.title || getHost(found.link.url);
             found.folder.links.splice(found.index, 1);
             save();
             render();
+            window.dispatchEvent(new CustomEvent('dino-link-deleted', {
+                detail: { title }
+            }));
         });
     });
 
@@ -291,11 +299,15 @@ function moveDraggedLink(targetFolderId) {
     const found = findLink(linkId);
     const targetFolder = findFolder(targetFolderId);
     if (!found || !targetFolder || found.folder.id === targetFolder.id) return;
+    const title = found.link.title || getHost(found.link.url);
     found.folder.links.splice(found.index, 1);
     targetFolder.links.push(found.link);
     targetFolder.open = true;
     save();
     render();
+    window.dispatchEvent(new CustomEvent('dino-link-moved', {
+        detail: { title, folderName: targetFolder.name }
+    }));
 }
 
 function removeIcon() {
@@ -365,6 +377,9 @@ export async function initFavouriteLinksUI() {
         els.folderName.value = '';
         save();
         render();
+        window.dispatchEvent(new CustomEvent('dino-folder-added', {
+            detail: { folderName: name }
+        }));
     });
 
     els.linkForm?.addEventListener('submit', (event) => {
@@ -373,9 +388,10 @@ export async function initFavouriteLinksUI() {
         if (!url) return;
         const folder = findFolder(els.folderSelect.value) || data.folders[0];
         if (!folder) return;
+        const title = sanitizeText(els.linkTitle.value, 40) || getHost(url);
         folder.links.push({
             id: makeId('link'),
-            title: sanitizeText(els.linkTitle.value, 40) || getHost(url),
+            title,
             url,
         });
         folder.open = true;
@@ -383,6 +399,9 @@ export async function initFavouriteLinksUI() {
         els.linkUrl.value = '';
         save();
         render();
+        window.dispatchEvent(new CustomEvent('dino-link-added', {
+            detail: { title, url, folderName: folder.name }
+        }));
     });
 
     els.close?.addEventListener('click', () => {

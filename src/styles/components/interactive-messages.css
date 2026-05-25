@@ -1,0 +1,104 @@
+/* src/styles/components/interactive-messages.css */
+
+.interactive-message-box {
+    position: absolute;
+    z-index: 10000; /* Float above everything else */
+    width: 260px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    box-shadow: var(--ui-glow);
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Inter', 'Google Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none; /* Don't interfere with user clicks/interactions */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.interactive-message-box.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Header resembling an OS command terminal window */
+.msg-terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: color-mix(in srgb, var(--accent-color) 8%, rgba(0, 0, 0, 0.45));
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--panel-border);
+    user-select: none;
+}
+
+.msg-terminal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 0.85;
+}
+
+.msg-terminal-dot.dot-red {
+    background-color: #ff5f56;
+}
+.msg-terminal-dot.dot-yellow {
+    background-color: #ffbd2e;
+}
+.msg-terminal-dot.dot-green {
+    background-color: #27c93f;
+}
+
+.msg-terminal-title {
+    font-size: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-color);
+    opacity: 0.5;
+    letter-spacing: 1.5px;
+    margin-left: auto;
+}
+
+/* Body container holding prompt, text, and blinking cursor */
+.msg-terminal-body {
+    padding: 10px 12px;
+    color: var(--text-color);
+    line-height: 1.35;
+    min-height: 52px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.msg-terminal-prompt {
+    color: var(--accent-color);
+    font-weight: bold;
+    user-select: none;
+}
+
+.msg-terminal-text {
+    flex: 1;
+    word-break: break-word;
+    text-shadow: 0 0 5px color-mix(in srgb, var(--text-color) 35%, transparent);
+}
+
+.msg-terminal-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background-color: var(--accent-color);
+    margin-left: 2px;
+    animation: terminal-blink 0.8s step-end infinite;
+    vertical-align: middle;
+}
+
+@keyframes terminal-blink {
+    50% { opacity: 0; }
+}
