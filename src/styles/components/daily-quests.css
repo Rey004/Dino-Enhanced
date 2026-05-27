@@ -49,9 +49,10 @@
     min-width: 0;
 }
 .daily-quests__title {
-    font-family: 'VT323', monospace;
-    font-size: 22px;
-    letter-spacing: 0.04em;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
     line-height: 1;
     color: var(--text-color);
     text-transform: uppercase;

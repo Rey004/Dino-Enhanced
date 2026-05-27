@@ -82,12 +82,12 @@
 
 .history-sidebar__title {
     margin: 0;
-    font-family: 'VT323', monospace;
-    font-size: 26px;
-    letter-spacing: 0.04em;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     line-height: 1;
-    font-weight: 400;
+    font-weight: 600;
     color: var(--text-color);
 }
 

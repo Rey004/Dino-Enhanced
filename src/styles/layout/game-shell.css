@@ -52,16 +52,20 @@ canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 .settings-panel__title {
-    margin: 0 0 22px;
-    font-size: 18px;
-    font-weight: 700;
+    margin: 0 0 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--text-color);
 }
 .newtab-brand__text {
-    font-family: 'Google Sans', 'Inter', sans-serif;
-    font-size: 15px;
+    font-family: var(--font-mono);
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
     color: var(--text-color);
     opacity: 0.92;
     transition: color var(--t), opacity 0.2s;

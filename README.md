@@ -196,7 +196,7 @@ Click the **DinoDash icon** in the Chrome toolbar to open the popup panel:
 | Rendering | HTML5 Canvas |
 | Storage | `chrome.storage.local` |
 | History | `chrome.history` API |
-| Fonts | Google Fonts (Inter, Google Sans, VT323) |
+| Fonts | Google Fonts (Inter, JetBrains Mono) |
 | Permissions | `storage`, `tabs`, `history` |
 
 ### Project Structure

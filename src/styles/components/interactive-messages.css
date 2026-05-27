@@ -10,7 +10,7 @@
     box-shadow: var(--ui-glow);
     padding: 0;
     overflow: hidden;
-    font-family: 'Inter', 'Google Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 500;
     letter-spacing: -0.01em;

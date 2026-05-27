@@ -17,6 +17,9 @@
 
     /* Transition shared across all theme-reactive props */
     --t: 0.45s cubic-bezier(0.4,0,0.2,1);
+
+    /* Mono stack — used for the DinoDash logo and every widget panel title */
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
 /* â”€â”€ Dynamic Logo Styling â”€â”€ */
